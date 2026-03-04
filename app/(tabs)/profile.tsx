@@ -16,15 +16,22 @@ import {
   Info,
   ChevronRight,
   ExternalLink,
+  MapPin,
+  Trash2,
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAppContext } from "@/contexts/AppContext";
+import { touristSpots } from "@/constants/touristSpots";
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { exploredSpots, favorites } = useAppContext();
+  const { exploredSpots, favorites, toggleFavorite } = useAppContext();
+
+  const favoriteSpots = touristSpots.filter((spot) =>
+    favorites.includes(spot.id)
+  );
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
 
@@ -107,6 +114,67 @@ export default function SettingsScreen() {
                   translateY: slideAnim.interpolate({
                     inputRange: [0, 30],
                     outputRange: [0, 40],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <Text style={styles.sectionTitle}>My Favorites</Text>
+
+          {favoriteSpots.length === 0 ? (
+            <View style={styles.emptyFavContainer}>
+              <Heart size={36} color="#D0D0D0" />
+              <Text style={styles.emptyFavText}>No favorites yet</Text>
+            </View>
+          ) : (
+            favoriteSpots.map((spot) => (
+              <TouchableOpacity
+                key={spot.id}
+                style={styles.favItem}
+                activeOpacity={0.8}
+                onPress={() => router.push(`/spot/${spot.id}` as any)}
+              >
+                <Image
+                  source={{ uri: spot.image }}
+                  style={styles.favItemImage}
+                />
+                <View style={styles.favItemInfo}>
+                  <Text style={styles.favItemName} numberOfLines={1}>
+                    {spot.name}
+                  </Text>
+                  <View style={styles.favItemLocation}>
+                    <MapPin size={12} color="#888" />
+                    <Text style={styles.favItemLocationText} numberOfLines={1}>
+                      {spot.location}
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  style={styles.favRemoveBtn}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(spot.id);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Trash2 size={16} color="#E94444" />
+                </TouchableOpacity>
+              </TouchableOpacity>
+            ))
+          )}
+        </Animated.View>
+
+        <Animated.View
+          style={[
+            styles.section,
+            {
+              opacity: fadeAnim,
+              transform: [
+                {
+                  translateY: slideAnim.interpolate({
+                    inputRange: [0, 30],
+                    outputRange: [0, 50],
                   }),
                 },
               ],
@@ -332,5 +400,69 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#CCCCCC",
     marginTop: 4,
+  },
+  emptyFavContainer: {
+    alignItems: "center",
+    paddingVertical: 28,
+    gap: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(17, 122, 122, 0.06)",
+  },
+  emptyFavText: {
+    fontSize: 14,
+    fontWeight: "500" as const,
+    color: "#AAAAAA",
+  },
+  favItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 10,
+    gap: 12,
+    shadowColor: "#117A7A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "rgba(17, 122, 122, 0.06)",
+  },
+  favItemImage: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    backgroundColor: "#F0F0F0",
+  },
+  favItemInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  favItemName: {
+    fontSize: 15,
+    fontWeight: "700" as const,
+    color: "#1A1A1A",
+  },
+  favItemLocation: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  favItemLocationText: {
+    fontSize: 12,
+    fontWeight: "500" as const,
+    color: "#888",
+    flex: 1,
+  },
+  favRemoveBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#FFF0F0",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

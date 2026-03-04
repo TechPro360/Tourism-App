@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, MapPin, Heart, Settings } from "lucide-react-native";
+import { Home, MapPin, CalendarDays, Settings } from "lucide-react-native";
 import React from "react";
 import { View, StyleSheet, Platform, Image } from "react-native";
 
@@ -50,10 +50,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="events"
+        options={{
+          title: "Events",
+          tabBarIcon: ({ color, size }) => <CalendarDays color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
         name="favorites"
         options={{
-          title: "Favorites",
-          tabBarIcon: ({ color, size }) => <Heart color={color} size={size} />,
+          href: null,
         }}
       />
       <Tabs.Screen
