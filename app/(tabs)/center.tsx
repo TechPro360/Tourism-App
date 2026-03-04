@@ -37,13 +37,21 @@ interface TabContent {
   [key: string]: ContentItem[];
 }
 
+const categoryImages = {
+  adventure: require('@/assets/images/adventure.png'),
+  faith: require('@/assets/images/faith.png'),
+  food: require('@/assets/images/food.png'),
+  fun: require('@/assets/images/fun.png'),
+  learning: require('@/assets/images/learning.png'),
+};
+
 const tabs: Tab[] = [
   {
     id: "adventure",
     title: "Adventure",
     subtitle: "Never Ending",
-    tabIcon: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/6hz2kbgkn57k8hisrdnlc",
-    headerLogo: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/6hz2kbgkn57k8hisrdnlc",
+    tabIcon: "adventure",
+    headerLogo: "adventure",
     accent: "#E74C3C",
     accentLight: "#FDE8E6",
     bgGradient: ["#FFFFFF", "#FFF5F4"],
@@ -52,8 +60,8 @@ const tabs: Tab[] = [
     id: "faith",
     title: "Faith",
     subtitle: "Never Ending",
-    tabIcon: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/h1l637okdmt2z9egfbztq",
-    headerLogo: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/h1l637okdmt2z9egfbztq",
+    tabIcon: "faith",
+    headerLogo: "faith",
     accent: "#3498DB",
     accentLight: "#E8F4FD",
     bgGradient: ["#FFFFFF", "#F0F7FC"],
@@ -62,8 +70,8 @@ const tabs: Tab[] = [
     id: "food",
     title: "Food",
     subtitle: "Never Ending",
-    tabIcon: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/ji9yt69byktilay2f2crv",
-    headerLogo: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/ji9yt69byktilay2f2crv",
+    tabIcon: "food",
+    headerLogo: "food",
     accent: "#C0396B",
     accentLight: "#FCE8F0",
     bgGradient: ["#FFFFFF", "#FDF2F6"],
@@ -72,8 +80,8 @@ const tabs: Tab[] = [
     id: "fun",
     title: "Fun",
     subtitle: "Never Ending",
-    tabIcon: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/lfegm7nuais1u5gk5mf78",
-    headerLogo: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/lfegm7nuais1u5gk5mf78",
+    tabIcon: "fun",
+    headerLogo: "fun",
     accent: "#8BAA20",
     accentLight: "#F2F6E0",
     bgGradient: ["#FFFFFF", "#F7F9EE"],
@@ -82,8 +90,8 @@ const tabs: Tab[] = [
     id: "learning",
     title: "Learning",
     subtitle: "Never Ending",
-    tabIcon: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/9x26nychx1u2lcv328kuf",
-    headerLogo: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/9x26nychx1u2lcv328kuf",
+    tabIcon: "learning",
+    headerLogo: "learning",
     accent: "#E8751A",
     accentLight: "#FDF0E5",
     bgGradient: ["#FFFFFF", "#FEF5ED"],
@@ -326,7 +334,7 @@ export default function CenterScreen() {
             ]}
           >
             <Image
-              source={{ uri: tab.tabIcon }}
+              source={categoryImages[tab.tabIcon as keyof typeof categoryImages]}
               style={styles.tabIconImage}
               resizeMode="contain"
             />
@@ -425,7 +433,7 @@ export default function CenterScreen() {
           ]}
         >
           <Image
-            source={{ uri: activeTabData.headerLogo }}
+            source={categoryImages[activeTabData.headerLogo as keyof typeof categoryImages]}
             style={styles.logo}
             resizeMode="contain"
           />
