@@ -15,14 +15,15 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MapPin, ChevronRight, Compass } from "lucide-react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CARD_WIDTH = SCREEN_WIDTH - 48;
 
 interface Tab {
   id: string;
   title: string;
   subtitle: string;
-  image: string;
+  tabIcon: string;
+  headerLogo: string;
   accent: string;
+  accentLight: string;
   bgGradient: [string, string];
 }
 
@@ -41,41 +42,51 @@ const tabs: Tab[] = [
     id: "adventure",
     title: "Adventure",
     subtitle: "Never Ending",
-    image: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/gvi1kmkuxdxpwpvoi3hjv",
+    tabIcon: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/86e07wvx9zwyi2x9foyc2",
+    headerLogo: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/86e07wvx9zwyi2x9foyc2",
     accent: "#E74C3C",
-    bgGradient: ["#1A0A08", "#2D1510"],
+    accentLight: "#FDE8E6",
+    bgGradient: ["#FFFFFF", "#FFF5F4"],
   },
   {
     id: "faith",
     title: "Faith",
     subtitle: "Never Ending",
-    image: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/z8fyoay78qavd9580587u",
-    accent: "#5DADE2",
-    bgGradient: ["#081520", "#0D2236"],
+    tabIcon: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/0hcrctrg8jxkf5nn1jrkp",
+    headerLogo: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/0hcrctrg8jxkf5nn1jrkp",
+    accent: "#3498DB",
+    accentLight: "#E8F4FD",
+    bgGradient: ["#FFFFFF", "#F0F7FC"],
   },
   {
     id: "food",
     title: "Food",
     subtitle: "Never Ending",
-    image: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/wumybnpxyhvc3iwedhjdq",
-    accent: "#D4507A",
-    bgGradient: ["#1A0A12", "#2D1522"],
+    tabIcon: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/afdfcz80zvij9gl6horve",
+    headerLogo: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/afdfcz80zvij9gl6horve",
+    accent: "#C0396B",
+    accentLight: "#FCE8F0",
+    bgGradient: ["#FFFFFF", "#FDF2F6"],
   },
   {
     id: "fun",
     title: "Fun",
     subtitle: "Never Ending",
-    image: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/ccnmkbozim44hvprjudba",
-    accent: "#A8B820",
-    bgGradient: ["#121408", "#1E2210"],
+    tabIcon: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/mi8ype72348spyer2ufez",
+    headerLogo: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/mi8ype72348spyer2ufez",
+    accent: "#8BAA20",
+    accentLight: "#F2F6E0",
+    bgGradient: ["#FFFFFF", "#F7F9EE"],
   },
   {
     id: "learning",
     title: "Learning",
     subtitle: "Never Ending",
-    image: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/g7a1lt202jccd2pk0ya89",
-    accent: "#FF7043",
-    bgGradient: ["#1A0E08", "#2D1A10"],
+    tabIcon: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/cvj26grwpzkujvqw7j69m",
+    headerLogo: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/cvj26grwpzkujvqw7j69m",
+    accent: "#E8751A",
+    accentLight: "#FDF0E5",
+    bgGradient: ["#FFFFFF", "#FEF5ED"],
   },
 ];
 
@@ -174,6 +185,7 @@ export default function CenterScreen() {
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const logoScale = useRef(new Animated.Value(0.85)).current;
+  const logoFade = useRef(new Animated.Value(1)).current;
   const contentFade = useRef(new Animated.Value(1)).current;
   const titleSlide = useRef(new Animated.Value(20)).current;
   const titleOpacity = useRef(new Animated.Value(0)).current;
@@ -228,6 +240,21 @@ export default function CenterScreen() {
     ]).start();
   }, [titleSlide, titleOpacity]);
 
+  const animateLogo = useCallback(() => {
+    Animated.sequence([
+      Animated.timing(logoFade, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(logoFade, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [logoFade]);
+
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -261,7 +288,8 @@ export default function CenterScreen() {
     ]).start();
     animateCards();
     animateTitle();
-  }, [activeTab, contentFade, animateCards, animateTitle]);
+    animateLogo();
+  }, [activeTab, contentFade, animateCards, animateTitle, animateLogo]);
 
   const handleTabPress = useCallback((tabId: string) => {
     setActiveTab(tabId);
@@ -276,31 +304,31 @@ export default function CenterScreen() {
       <TouchableOpacity
         key={tab.id}
         onPress={() => handleTabPress(tab.id)}
-        activeOpacity={0.8}
+        activeOpacity={0.7}
         style={styles.tabButton}
       >
         <View
           style={[
             styles.tabPill,
-            isActive && { backgroundColor: activeTabData.accent + "18" },
+            isActive && {
+              backgroundColor: tab.accent + "14",
+              borderColor: tab.accent + "30",
+            },
           ]}
         >
           <View
             style={[
-              styles.tabAvatarContainer,
+              styles.tabIconWrap,
               isActive && {
-                borderColor: tab.accent,
-                shadowColor: tab.accent,
-                shadowOpacity: 0.5,
-                shadowRadius: 8,
-                elevation: 6,
+                backgroundColor: tab.accent + "12",
+                borderColor: tab.accent + "40",
               },
             ]}
           >
             <Image
-              source={{ uri: tab.image }}
-              style={styles.tabAvatar}
-              resizeMode="cover"
+              source={{ uri: tab.tabIcon }}
+              style={styles.tabIconImage}
+              resizeMode="contain"
             />
           </View>
           {isActive && (
@@ -311,7 +339,7 @@ export default function CenterScreen() {
         </View>
       </TouchableOpacity>
     );
-  }, [activeTab, activeTabData.accent, handleTabPress]);
+  }, [activeTab, handleTabPress]);
 
   const renderCard = useCallback((item: ContentItem, index: number) => {
     const cardAnim = cardAnimations[index];
@@ -335,30 +363,35 @@ export default function CenterScreen() {
             resizeMode="cover"
           />
           <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.85)"]}
+            colors={["transparent", "rgba(0,0,0,0.4)", "rgba(0,0,0,0.75)"]}
             style={styles.cardImageOverlay}
             locations={[0.2, 0.6, 1]}
           />
           <View style={styles.cardBody}>
             <View style={styles.cardLocationRow}>
-              <MapPin size={13} color={activeTabData.accent} />
-              <Text style={[styles.cardLocationText, { color: activeTabData.accent }]}>
+              <MapPin size={12} color="#FFFFFF" />
+              <Text style={styles.cardLocationText}>
                 Nueva Ecija
               </Text>
             </View>
             <Text style={styles.cardTitle}>{item.title}</Text>
+          </View>
+          <View style={styles.cardBottom}>
             <Text style={styles.cardDesc} numberOfLines={2}>
               {item.description}
             </Text>
             <View style={styles.cardFooter}>
-              <View style={[styles.cardBadge, { backgroundColor: activeTabData.accent + "22" }]}>
+              <View style={[styles.cardBadge, { backgroundColor: activeTabData.accent + "15" }]}>
                 <Text style={[styles.cardBadgeText, { color: activeTabData.accent }]}>
                   {activeTabData.title}
                 </Text>
               </View>
-              <View style={[styles.cardArrowBtn, { backgroundColor: activeTabData.accent }]}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={[styles.cardArrowBtn, { backgroundColor: activeTabData.accent }]}
+              >
                 <ChevronRight size={16} color="#FFF" />
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -385,13 +418,14 @@ export default function CenterScreen() {
         <Animated.View
           style={[
             styles.logoContainer,
-            { transform: [{ scale: logoScale }] },
+            {
+              transform: [{ scale: logoScale }],
+              opacity: logoFade,
+            },
           ]}
         >
           <Image
-            source={{
-              uri: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/25dqw5o26bqtorxqav9af",
-            }}
+            source={{ uri: activeTabData.headerLogo }}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -417,10 +451,10 @@ export default function CenterScreen() {
           <View style={[styles.sectionAccent, { backgroundColor: activeTabData.accent }]} />
           <View>
             <Text style={styles.sectionSubtitle}>{activeTabData.subtitle}</Text>
-            <Text style={styles.sectionTitle}>{activeTabData.title}</Text>
+            <Text style={[styles.sectionTitle, { color: activeTabData.accent }]}>{activeTabData.title}</Text>
           </View>
           <View style={styles.sectionCountContainer}>
-            <Compass size={14} color="rgba(255,255,255,0.5)" />
+            <Compass size={14} color="rgba(0,0,0,0.35)" />
             <Text style={styles.sectionCount}>{activeContent.length} places</Text>
           </View>
         </Animated.View>
@@ -446,24 +480,24 @@ export default function CenterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0F0F0F",
+    backgroundColor: "#FFFFFF",
   },
   headerArea: {
     paddingBottom: 4,
   },
   logoContainer: {
     alignItems: "center",
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
   logo: {
-    width: 220,
-    height: 100,
+    width: 240,
+    height: 110,
   },
   tabsRow: {
     paddingHorizontal: 16,
     gap: 6,
     alignItems: "center",
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   tabButton: {
     marginRight: 2,
@@ -476,32 +510,37 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingLeft: 4,
     gap: 8,
-    backgroundColor: "rgba(255,255,255,0.06)",
+    backgroundColor: "rgba(0,0,0,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.06)",
   },
-  tabAvatarContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  tabIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     overflow: "hidden",
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.12)",
+    borderWidth: 1.5,
+    borderColor: "rgba(0,0,0,0.08)",
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  tabAvatar: {
-    width: "100%",
-    height: "100%",
+  tabIconImage: {
+    width: 34,
+    height: 34,
   },
   tabLabel: {
     fontSize: 13,
     fontWeight: "700" as const,
     letterSpacing: 0.5,
-    paddingRight: 12,
+    paddingRight: 14,
   },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 8,
+    paddingTop: 10,
+    paddingBottom: 6,
     gap: 12,
   },
   sectionAccent: {
@@ -511,15 +550,14 @@ const styles = StyleSheet.create({
   },
   sectionSubtitle: {
     fontSize: 11,
-    fontWeight: "500" as const,
-    color: "rgba(255,255,255,0.4)",
+    fontWeight: "600" as const,
+    color: "rgba(0,0,0,0.4)",
     letterSpacing: 1.5,
     textTransform: "uppercase" as const,
   },
   sectionTitle: {
     fontSize: 22,
     fontWeight: "800" as const,
-    color: "#FFFFFF",
     letterSpacing: -0.3,
   },
   sectionCountContainer: {
@@ -531,7 +569,7 @@ const styles = StyleSheet.create({
   sectionCount: {
     fontSize: 12,
     fontWeight: "500" as const,
-    color: "rgba(255,255,255,0.4)",
+    color: "rgba(0,0,0,0.35)",
   },
   contentArea: {
     flex: 1,
@@ -550,64 +588,72 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.35,
-        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.12,
+        shadowRadius: 14,
       },
       android: {
-        elevation: 12,
+        elevation: 8,
       },
       web: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.35,
-        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.12,
+        shadowRadius: 14,
       },
     }),
   },
   card: {
     borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.06)",
   },
   cardImage: {
     width: "100%",
-    height: 200,
+    height: 190,
   },
   cardImageOverlay: {
     position: "absolute" as const,
     left: 0,
     right: 0,
     top: 0,
-    height: 200,
+    height: 190,
   },
   cardBody: {
-    padding: 18,
-    marginTop: -56,
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    marginTop: -50,
   },
   cardLocationRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    marginBottom: 6,
+    marginBottom: 4,
   },
   cardLocationText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "600" as const,
     letterSpacing: 0.8,
     textTransform: "uppercase" as const,
+    color: "rgba(255,255,255,0.85)",
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "700" as const,
     color: "#FFFFFF",
-    marginBottom: 6,
     letterSpacing: -0.2,
+  },
+  cardBottom: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 14,
   },
   cardDesc: {
     fontSize: 13,
     fontWeight: "400" as const,
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(0,0,0,0.55)",
     lineHeight: 19,
     marginBottom: 14,
   },
