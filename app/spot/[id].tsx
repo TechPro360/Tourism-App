@@ -28,6 +28,7 @@ import {
 } from "lucide-react-native";
 import { touristSpots } from "@/constants/touristSpots";
 import { useAppContext } from "@/contexts/AppContext";
+import { resolveImageSource } from "@/utils/imageHelper";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -184,7 +185,7 @@ export default function SpotDetailScreen() {
                 },
               ]}
             >
-              <Image source={{ uri: image }} style={styles.carouselImage} />
+              <Image source={resolveImageSource(image)} style={styles.carouselImage} />
             </Animated.View>
           ))}
         </Animated.ScrollView>

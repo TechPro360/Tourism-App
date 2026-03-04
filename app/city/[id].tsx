@@ -22,6 +22,7 @@ import {
 } from "lucide-react-native";
 import { municipalities, Place } from "@/constants/municipalities";
 import { useAppContext } from "@/contexts/AppContext";
+import { resolveImageSource } from "@/utils/imageHelper";
 
 export default function CityPlacesScreen() {
   const { id } = useLocalSearchParams();
@@ -78,7 +79,7 @@ export default function CityPlacesScreen() {
 
       <Animated.View style={[styles.heroContainer, { opacity: headerAnim }]}>
         <Image
-          source={{ uri: municipality.image }}
+          source={resolveImageSource(municipality.image)}
           style={styles.heroImage}
         />
         <LinearGradient
@@ -248,7 +249,7 @@ function PlaceCard({ place, index, contentAnim, isFav, onPress, onFavorite }: Pl
         onPress={onPress}
         testID={`place-card-${place.id}`}
       >
-        <Image source={{ uri: place.image }} style={styles.placeImage} />
+        <Image source={resolveImageSource(place.image)} style={styles.placeImage} />
         <LinearGradient
           colors={["transparent", "rgba(0,0,0,0.75)"]}
           style={styles.placeImageGradient}

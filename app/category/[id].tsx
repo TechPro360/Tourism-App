@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft, MapPin } from "lucide-react-native";
 import { touristSpots } from "@/constants/touristSpots";
+import { resolveImageSource } from "@/utils/imageHelper";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const COLUMN_WIDTH = (SCREEN_WIDTH - 48) / 2;
@@ -79,14 +80,21 @@ export default function CategoryDetailScreen() {
 
     spots.forEach((spot) => {
       spot.images.forEach((imageUrl, index) => {
-        Image.getSize(imageUrl, (width, height) => {
-          const aspectRatio = height / width;
-          const calculatedHeight = COLUMN_WIDTH * aspectRatio;
+        if (typeof imageUrl === 'string') {
+          Image.getSize(imageUrl, (width, height) => {
+            const aspectRatio = height / width;
+            const calculatedHeight = COLUMN_WIDTH * aspectRatio;
+            setImageHeights((prev) => ({
+              ...prev,
+              [`${spot.id}-${index}`]: calculatedHeight,
+            }));
+          });
+        } else {
           setImageHeights((prev) => ({
             ...prev,
-            [`${spot.id}-${index}`]: calculatedHeight,
+            [`${spot.id}-${index}`]: 200,
           }));
-        });
+        }
       });
     });
   }, [fadeAnim, id]);
@@ -128,7 +136,7 @@ export default function CategoryDetailScreen() {
                 onPress={() => router.push(`/spot/${spot.id}` as any)}
                 style={[styles.imageWrapper, { height }]}
               >
-                <Image source={{ uri: imageUrl }} style={styles.image} />
+                <Image source={resolveImageSource(imageUrl)} style={styles.image} />
                 <LinearGradient
                   colors={["transparent", "rgba(0,0,0,0.8)"]}
                   style={styles.imageGradient}

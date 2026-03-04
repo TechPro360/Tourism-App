@@ -15,6 +15,7 @@ import { MapPin, Search, Building2, Landmark, ChevronRight } from "lucide-react-
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { municipalities } from "@/constants/municipalities";
+import { resolveImageSource } from "@/utils/imageHelper";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = (SCREEN_WIDTH - 64) / 2;
@@ -190,7 +191,7 @@ export default function MapScreen() {
                     testID={`municipality-card-${municipality.id}`}
                   >
                     <Image
-                      source={{ uri: municipality.image }}
+                      source={resolveImageSource(municipality.image)}
                       style={styles.cardImage}
                     />
                     <LinearGradient

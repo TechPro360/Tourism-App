@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft, Heart } from "lucide-react-native";
 import { useAppContext } from "@/contexts/AppContext";
+import { ImageSource, resolveImageSource } from "@/utils/imageHelper";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -26,7 +27,7 @@ interface CategoryInfo {
     id: string;
     name: string;
     location: string;
-    image: string;
+    image: ImageSource;
     description: string;
     date?: string;
   }[];
@@ -60,6 +61,34 @@ const categoryData: Record<string, CategoryInfo> = {
         image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
         description: "Lakeside resort perfect for relaxation and water activities",
       },
+      {
+        id: "h4",
+        name: "Dandin Resort",
+        location: "Carranglan",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/Dandin Resort/Dandin Resort.jpg'),
+        description: "Relaxing resort with swimming pools and scenic mountain views",
+      },
+      {
+        id: "h5",
+        name: "Highland Hotel & Resort",
+        location: "Carranglan",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/Highland Hotel & Resort/Highland Hotel & Resort.jpg'),
+        description: "Premier highland resort with breathtaking mountain views",
+      },
+      {
+        id: "h6",
+        name: "M&S Venue & Private Pool",
+        location: "Carranglan",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/M_S Venue & Private Pool/M_s Venue & Private Pool.jpg'),
+        description: "Private venue and pool for events and family gatherings",
+      },
+      {
+        id: "h7",
+        name: "MBA Nature Resort",
+        location: "Carranglan",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/MBA Nature Resort/MBA Nature Resort.jpg'),
+        description: "Nature-themed resort with lush greenery and outdoor activities",
+      },
     ],
   },
   restaurants: {
@@ -88,6 +117,41 @@ const categoryData: Record<string, CategoryInfo> = {
         location: "Pantabangan",
         image: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800",
         description: "Grilled specialties with stunning lake views",
+      },
+      {
+        id: "r4",
+        name: "7-27 Cafe",
+        location: "Carranglan",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/7-27 Cafe/7_27 Cafe.jpg'),
+        description: "Cozy cafe serving freshly brewed coffee and pastries",
+      },
+      {
+        id: "r5",
+        name: "Fragata Restaurant",
+        location: "Carranglan",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Fragata Restaurant/Fragata Restaurant.jpg'),
+        description: "Delicious Filipino cuisine with generous servings",
+      },
+      {
+        id: "r6",
+        name: "Highland RestoBar",
+        location: "Carranglan",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Highland RestoBar/Highland RestoBar.jpg'),
+        description: "Great food and drinks with a laid-back highland vibe",
+      },
+      {
+        id: "r7",
+        name: "Lola Mommy's Eatery",
+        location: "Carranglan",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Lola Mommy_s Eatery/Lola Mommy_s Eatery.jpg'),
+        description: "Home-style eatery with traditional Filipino comfort food",
+      },
+      {
+        id: "r8",
+        name: "Roadtrip Cafe and Resto",
+        location: "Carranglan",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Roadtrip Cafe and Resto/Roadtrip Cafe and Resto.jpg'),
+        description: "Roadside cafe perfect for travelers with hearty meals",
       },
     ],
   },
@@ -307,7 +371,7 @@ export default function CategoryDetailScreen() {
               ]}
             >
               <TouchableOpacity style={styles.cardTouchable} activeOpacity={0.9}>
-                <Image source={{ uri: item.image }} style={styles.cardImage} />
+                <Image source={resolveImageSource(item.image)} style={styles.cardImage} />
                 <TouchableOpacity
                   style={styles.favoriteButton}
                   onPress={() => toggleFavorite(item.id)}

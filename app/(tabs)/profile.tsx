@@ -23,6 +23,7 @@ import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAppContext } from "@/contexts/AppContext";
 import { touristSpots } from "@/constants/touristSpots";
+import { resolveImageSource } from "@/utils/imageHelper";
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
@@ -136,7 +137,7 @@ export default function SettingsScreen() {
                 onPress={() => router.push(`/spot/${spot.id}` as any)}
               >
                 <Image
-                  source={{ uri: spot.image }}
+                  source={resolveImageSource(spot.image)}
                   style={styles.favItemImage}
                 />
                 <View style={styles.favItemInfo}>

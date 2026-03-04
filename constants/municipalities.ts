@@ -1,9 +1,11 @@
+import { ImageSource } from '@/utils/imageHelper';
+
 export interface Place {
   id: string;
   name: string;
   description: string;
-  image: string;
-  images: string[];
+  image: ImageSource;
+  images: ImageSource[];
   category: string;
   coordinates: {
     latitude: number;
@@ -365,6 +367,105 @@ export const municipalities: Municipality[] = [
         ],
         category: "adventure",
         coordinates: { latitude: 15.9200, longitude: 121.1350 },
+      },
+      {
+        id: "car-3",
+        name: "Dandin Resort",
+        description: "A relaxing resort in the heart of Carranglan offering comfortable accommodations, swimming pools, and scenic mountain views.",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/Dandin Resort/Dandin Resort.jpg'),
+        images: [
+          require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/Dandin Resort/Dandin Resort.jpg'),
+        ],
+        category: "fun",
+        coordinates: { latitude: 15.9180, longitude: 121.1340 },
+      },
+      {
+        id: "car-4",
+        name: "Highland Hotel & Resort",
+        description: "A premier highland resort offering breathtaking mountain views, comfortable rooms, and a refreshing escape from the city.",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/Highland Hotel & Resort/Highland Hotel & Resort.jpg'),
+        images: [
+          require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/Highland Hotel & Resort/Highland Hotel & Resort.jpg'),
+        ],
+        category: "fun",
+        coordinates: { latitude: 15.9190, longitude: 121.1320 },
+      },
+      {
+        id: "car-5",
+        name: "M&S Venue & Private Pool",
+        description: "A private venue and pool perfect for events, celebrations, and family gatherings in a serene Carranglan setting.",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/M_S Venue & Private Pool/M_s Venue & Private Pool.jpg'),
+        images: [
+          require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/M_S Venue & Private Pool/M_s Venue & Private Pool.jpg'),
+        ],
+        category: "fun",
+        coordinates: { latitude: 15.9175, longitude: 121.1355 },
+      },
+      {
+        id: "car-6",
+        name: "MBA Nature Resort",
+        description: "A nature-themed resort surrounded by lush greenery, offering a peaceful retreat with swimming pools and outdoor activities.",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/MBA Nature Resort/MBA Nature Resort.jpg'),
+        images: [
+          require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/MBA Nature Resort/MBA Nature Resort.jpg'),
+        ],
+        category: "fun",
+        coordinates: { latitude: 15.9195, longitude: 121.1310 },
+      },
+      {
+        id: "car-7",
+        name: "7-27 Cafe",
+        description: "A cozy cafe in Carranglan serving freshly brewed coffee, pastries, and light meals in a welcoming atmosphere.",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/7-27 Cafe/7_27 Cafe.jpg'),
+        images: [
+          require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/7-27 Cafe/7_27 Cafe.jpg'),
+        ],
+        category: "food",
+        coordinates: { latitude: 15.9160, longitude: 121.1345 },
+      },
+      {
+        id: "car-8",
+        name: "Fragata Restaurant",
+        description: "A popular dining spot in Carranglan known for its delicious Filipino cuisine and generous servings in a warm, family-friendly setting.",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Fragata Restaurant/Fragata Restaurant.jpg'),
+        images: [
+          require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Fragata Restaurant/Fragata Restaurant.jpg'),
+        ],
+        category: "food",
+        coordinates: { latitude: 15.9155, longitude: 121.1350 },
+      },
+      {
+        id: "car-9",
+        name: "Highland RestoBar",
+        description: "A restaurant and bar offering great food and drinks with a laid-back highland vibe, perfect for unwinding after a day of adventure.",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Highland RestoBar/Highland RestoBar.jpg'),
+        images: [
+          require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Highland RestoBar/Highland RestoBar.jpg'),
+        ],
+        category: "food",
+        coordinates: { latitude: 15.9165, longitude: 121.1330 },
+      },
+      {
+        id: "car-10",
+        name: "Lola Mommy's Eatery",
+        description: "A charming home-style eatery serving traditional Filipino comfort food with recipes passed down through generations.",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Lola Mommy_s Eatery/Lola Mommy_s Eatery.jpg'),
+        images: [
+          require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Lola Mommy_s Eatery/Lola Mommy_s Eatery.jpg'),
+        ],
+        category: "food",
+        coordinates: { latitude: 15.9170, longitude: 121.1325 },
+      },
+      {
+        id: "car-11",
+        name: "Roadtrip Cafe and Resto",
+        description: "A roadside cafe and restaurant perfect for travelers, offering hearty meals, refreshing drinks, and a cozy stopover experience.",
+        image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Roadtrip Cafe and Resto/Roadtrip Cafe and Resto.jpg'),
+        images: [
+          require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Roadtrip Cafe and Resto/Roadtrip Cafe and Resto.jpg'),
+        ],
+        category: "food",
+        coordinates: { latitude: 15.9150, longitude: 121.1360 },
       },
     ],
   },

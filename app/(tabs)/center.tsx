@@ -13,6 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { MapPin, ChevronRight, Compass } from "lucide-react-native";
+import { resolveImageSource } from "@/utils/imageHelper";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -366,7 +367,7 @@ export default function CenterScreen() {
       >
         <View style={styles.card}>
           <Image
-            source={{ uri: item.image }}
+            source={resolveImageSource(item.image)}
             style={styles.cardImage}
             resizeMode="cover"
           />

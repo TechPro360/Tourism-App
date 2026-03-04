@@ -27,6 +27,7 @@ import {
 } from "lucide-react-native";
 import { municipalities } from "@/constants/municipalities";
 import { useAppContext } from "@/contexts/AppContext";
+import { resolveImageSource } from "@/utils/imageHelper";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -175,7 +176,7 @@ export default function PlaceDetailScreen() {
                 },
               ]}
             >
-              <Image source={{ uri: image }} style={styles.carouselImage} />
+              <Image source={resolveImageSource(image)} style={styles.carouselImage} />
             </Animated.View>
           ))}
         </Animated.ScrollView>

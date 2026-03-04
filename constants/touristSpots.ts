@@ -1,15 +1,17 @@
+import { ImageSource } from '@/utils/imageHelper';
+
 export interface TouristSpot {
   id: string;
   name: string;
   location: string;
   description: string;
-  image: string;
+  image: ImageSource;
   coordinates: {
     latitude: number;
     longitude: number;
   };
   category: string;
-  images: string[];
+  images: ImageSource[];
   socialMedia?: {
     facebook?: string;
     instagram?: string;
@@ -349,5 +351,69 @@ export const touristSpots: TouristSpot[] = [
       facebook: "https://facebook.com/hilltopadventurene",
     },
     contact: "+63 956 789 0234",
+  },
+  {
+    id: "16",
+    name: "Highland Hotel & Resort",
+    location: "Carranglan, Nueva Ecija",
+    description:
+      "A premier highland resort offering breathtaking mountain views, comfortable rooms, and a refreshing escape from the city. Perfect for families and groups seeking relaxation.",
+    image: require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/Highland Hotel & Resort/Highland Hotel & Resort.jpg'),
+    coordinates: {
+      latitude: 15.9190,
+      longitude: 121.1320,
+    },
+    category: "fun",
+    images: [
+      require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/Highland Hotel & Resort/Highland Hotel & Resort.jpg'),
+    ],
+  },
+  {
+    id: "17",
+    name: "MBA Nature Resort",
+    location: "Carranglan, Nueva Ecija",
+    description:
+      "A nature-themed resort surrounded by lush greenery, offering a peaceful retreat with swimming pools and outdoor activities amidst the Sierra Madre foothills.",
+    image: require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/MBA Nature Resort/MBA Nature Resort.jpg'),
+    coordinates: {
+      latitude: 15.9195,
+      longitude: 121.1310,
+    },
+    category: "fun",
+    images: [
+      require('@/assets/images/Municipal-Images/Carrangalan/HOTEL AND RESORT/MBA Nature Resort/MBA Nature Resort.jpg'),
+    ],
+  },
+  {
+    id: "18",
+    name: "Fragata Restaurant",
+    location: "Carranglan, Nueva Ecija",
+    description:
+      "A popular dining spot in Carranglan known for its delicious Filipino cuisine and generous servings in a warm, family-friendly setting.",
+    image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Fragata Restaurant/Fragata Restaurant.jpg'),
+    coordinates: {
+      latitude: 15.9155,
+      longitude: 121.1350,
+    },
+    category: "food",
+    images: [
+      require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Fragata Restaurant/Fragata Restaurant.jpg'),
+    ],
+  },
+  {
+    id: "19",
+    name: "Roadtrip Cafe and Resto",
+    location: "Carranglan, Nueva Ecija",
+    description:
+      "A roadside cafe and restaurant perfect for travelers, offering hearty meals, refreshing drinks, and a cozy stopover experience along the highway.",
+    image: require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Roadtrip Cafe and Resto/Roadtrip Cafe and Resto.jpg'),
+    coordinates: {
+      latitude: 15.9150,
+      longitude: 121.1360,
+    },
+    category: "food",
+    images: [
+      require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Roadtrip Cafe and Resto/Roadtrip Cafe and Resto.jpg'),
+    ],
   },
 ];
