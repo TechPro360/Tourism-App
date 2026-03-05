@@ -124,7 +124,7 @@ export default function CategoryDetailScreen() {
                   },
                 ]}
               >
-                <TouchableOpacity style={styles.cardTouchable} activeOpacity={0.9}>
+                <TouchableOpacity style={styles.cardTouchable} activeOpacity={0.9} onPress={() => router.push(`/spot/${item.id}` as any)}>
                   <Image source={resolveImageSource(item.image)} style={styles.cardImage} />
                   <TouchableOpacity
                     style={styles.favoriteButton}

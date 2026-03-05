@@ -18,6 +18,7 @@ import {
   ChevronRight,
   ExternalLink,
   Phone,
+  Bell,
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -26,7 +27,7 @@ import { useAppContext } from "@/contexts/AppContext";
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { exploredSpots, favorites } = useAppContext();
+  const { exploredSpots, favorites, eventNotifications } = useAppContext();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
 
@@ -153,6 +154,27 @@ export default function SettingsScreen() {
               <Text style={styles.menuItemText}>Emergency Hotlines</Text>
             </View>
             <ChevronRight size={20} color="#CCCCCC" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.menuItem, { marginTop: 10 }]}
+            onPress={() => router.push("/notification-events" as any)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.menuItemLeft}>
+              <View style={[styles.menuIcon, { backgroundColor: "#FFF3E0" }]}>
+                <Bell size={22} color="#E65100" />
+              </View>
+              <Text style={styles.menuItemText}>Event Reminders</Text>
+            </View>
+            <View style={styles.menuItemRight}>
+              {eventNotifications.length > 0 && (
+                <View style={styles.notifBadge}>
+                  <Text style={styles.notifBadgeText}>{eventNotifications.length}</Text>
+                </View>
+              )}
+              <ChevronRight size={20} color="#CCCCCC" />
+            </View>
           </TouchableOpacity>
         </Animated.View>
 
@@ -352,5 +374,23 @@ const styles = StyleSheet.create({
     color: "#CCCCCC",
     marginTop: 4,
   },
-
+  menuItemRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  notifBadge: {
+    backgroundColor: "#E65100",
+    minWidth: 22,
+    height: 22,
+    borderRadius: 11,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 6,
+  },
+  notifBadgeText: {
+    fontSize: 11,
+    fontWeight: "700" as const,
+    color: "#FFFFFF",
+  },
 });

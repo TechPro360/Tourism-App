@@ -29,7 +29,7 @@ export default function MapScreen() {
   const [activeFilter, setActiveFilter] = useState<"all" | "city" | "municipality">("all");
   const cardAnims = useRef(municipalities.map(() => new Animated.Value(0))).current;
 
-  const HEADER_HEIGHT = 90;
+  const HEADER_HEIGHT = 110;
   const headerHeight = scrollY.interpolate({
     inputRange: [0, HEADER_HEIGHT],
     outputRange: [HEADER_HEIGHT, 0],
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 24,
     paddingTop: 16,
-    paddingBottom: 12,
+    paddingBottom: 16,
   },
   headerTop: {
     flexDirection: "row",

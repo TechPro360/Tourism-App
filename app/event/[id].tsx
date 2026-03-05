@@ -59,7 +59,7 @@ export default function EventDetailScreen() {
   const heroScale = useRef(new Animated.Value(1.1)).current;
   const heartScale = useRef(new Animated.Value(1)).current;
 
-  const { toggleFavorite, isFavorite } = useAppContext();
+  const { toggleFavorite, isFavorite, setEventNotification } = useAppContext();
   const favorite = isFavorite(id as string);
 
   const [shareVisible, setShareVisible] = useState(false);
@@ -151,8 +151,8 @@ export default function EventDetailScreen() {
   };
 
   const handleNotifySelect = (option: string) => {
+    setEventNotification(id as string, option);
     if (option) {
-      console.log(`Notification set: ${option} before ${event.title}`);
       const labelMap: Record<string, string> = {
         day: "1 day before",
         week: "1 week before",
@@ -161,6 +161,11 @@ export default function EventDetailScreen() {
       showToast(
         <Bell size={28} color="#FFFFFF" />,
         `Reminder set: ${labelMap[option] || option}`
+      );
+    } else {
+      showToast(
+        <Bell size={28} color="#FFFFFF" />,
+        "Reminder removed"
       );
     }
   };

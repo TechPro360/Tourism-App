@@ -22,16 +22,28 @@ export interface TouristSpot {
   contact?: string;
 }
 
+interface EventNotification {
+  eventId: string;
+  option: string;
+}
+
 interface ExploreState {
   exploredSpots: string[];
   favorites: string[];
+  eventNotifications: EventNotification[];
 }
 
 const STORAGE_KEY = "@nueva_ecija_app_state";
 
+export interface EventNotificationData {
+  eventId: string;
+  option: string;
+}
+
 export const [AppProvider, useAppContext] = createContextHook(() => {
   const [exploredSpots, setExploredSpots] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [eventNotifications, setEventNotifications] = useState<EventNotificationData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -45,6 +57,7 @@ export const [AppProvider, useAppContext] = createContextHook(() => {
         const state: ExploreState = JSON.parse(storedState);
         setExploredSpots(state.exploredSpots || []);
         setFavorites(state.favorites || []);
+        setEventNotifications(state.eventNotifications || []);
       }
     } catch (error) {
       console.error("Failed to load state:", error);
@@ -53,11 +66,12 @@ export const [AppProvider, useAppContext] = createContextHook(() => {
     }
   };
 
-  const saveState = async (newExplored: string[], newFavorites: string[]) => {
+  const saveState = async (newExplored: string[], newFavorites: string[], newNotifications?: EventNotificationData[]) => {
     try {
       const state: ExploreState = {
         exploredSpots: newExplored,
         favorites: newFavorites,
+        eventNotifications: newNotifications ?? eventNotifications,
       };
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (error) {
@@ -113,14 +127,55 @@ export const [AppProvider, useAppContext] = createContextHook(() => {
     [exploredSpots]
   );
 
+  const setEventNotification = useCallback(
+    (eventId: string, option: string) => {
+      setEventNotifications((prev) => {
+        let updated: EventNotificationData[];
+        if (!option) {
+          updated = prev.filter((n) => n.eventId !== eventId);
+        } else {
+          const existing = prev.findIndex((n) => n.eventId === eventId);
+          if (existing >= 0) {
+            updated = prev.map((n) => n.eventId === eventId ? { eventId, option } : n);
+          } else {
+            updated = [...prev, { eventId, option }];
+          }
+        }
+        saveState(exploredSpots, favorites, updated);
+        return updated;
+      });
+    },
+    [exploredSpots, favorites]
+  );
+
+  const removeEventNotification = useCallback(
+    (eventId: string) => {
+      setEventNotifications((prev) => {
+        const updated = prev.filter((n) => n.eventId !== eventId);
+        saveState(exploredSpots, favorites, updated);
+        return updated;
+      });
+    },
+    [exploredSpots, favorites]
+  );
+
+  const getEventNotification = useCallback(
+    (eventId: string) => eventNotifications.find((n) => n.eventId === eventId)?.option || null,
+    [eventNotifications]
+  );
+
   return {
     exploredSpots,
     favorites,
+    eventNotifications,
     isLoading,
     toggleFavorite,
     markAsExplored,
     toggleExplored,
     isFavorite,
     isExplored,
+    setEventNotification,
+    removeEventNotification,
+    getEventNotification,
   };
 });
