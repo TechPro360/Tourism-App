@@ -30,10 +30,13 @@ export default function AboutScreen() {
   });
 
   const toggleSection = (sectionId: string) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [sectionId]: !prev[sectionId],
-    }));
+    setExpandedSections((prev) => {
+      const wasExpanded = prev[sectionId];
+      const newState: { [key: string]: boolean } = {};
+      Object.keys(prev).forEach((k) => { newState[k] = false; });
+      newState[sectionId] = !wasExpanded;
+      return newState;
+    });
   };
 
   useEffect(() => {

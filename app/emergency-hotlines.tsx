@@ -73,17 +73,24 @@ export default function EmergencyHotlinesScreen() {
   }, [searchQuery, filteredHotlines]);
 
   const toggleDistrict = (districtName: string) => {
-    setExpandedDistricts((prev) => ({
-      ...prev,
-      [districtName]: !prev[districtName],
-    }));
+    setExpandedDistricts((prev) => {
+      const wasExpanded = prev[districtName];
+      const newState: { [key: string]: boolean } = {};
+      Object.keys(prev).forEach((k) => { newState[k] = false; });
+      newState[districtName] = !wasExpanded;
+      return newState;
+    });
+    setExpandedEntries({});
   };
 
   const toggleEntry = (key: string) => {
-    setExpandedEntries((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    setExpandedEntries((prev) => {
+      const wasExpanded = prev[key];
+      const newState: { [key: string]: boolean } = {};
+      Object.keys(prev).forEach((k) => { newState[k] = false; });
+      newState[key] = !wasExpanded;
+      return newState;
+    });
   };
 
   useEffect(() => {

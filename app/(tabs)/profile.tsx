@@ -17,24 +17,16 @@ import {
   Info,
   ChevronRight,
   ExternalLink,
-  MapPin,
-  Trash2,
   Phone,
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAppContext } from "@/contexts/AppContext";
-import { touristSpots } from "@/constants/touristSpots";
-import { resolveImageSource } from "@/utils/imageHelper";
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { exploredSpots, favorites, toggleFavorite } = useAppContext();
-
-  const favoriteSpots = touristSpots.filter((spot) =>
-    favorites.includes(spot.id)
-  );
+  const { exploredSpots, favorites } = useAppContext();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
 
@@ -90,82 +82,31 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <View style={styles.statCard}>
+          <TouchableOpacity
+            style={styles.statCard}
+            activeOpacity={0.8}
+            onPress={() => router.push("/explored-places" as any)}
+          >
             <View style={[styles.statIcon, { backgroundColor: "#E8F6F6" }]}>
               <CheckCircle2 size={28} color="#117A7A" />
             </View>
             <Text style={styles.statNumber}>{exploredSpots.length}</Text>
             <Text style={styles.statLabel}>Places Explored</Text>
-          </View>
+            <ChevronRight size={16} color="#BBBBBB" style={styles.statArrow} />
+          </TouchableOpacity>
 
-          <View style={styles.statCard}>
+          <TouchableOpacity
+            style={styles.statCard}
+            activeOpacity={0.8}
+            onPress={() => router.push("/favorites-list" as any)}
+          >
             <View style={[styles.statIcon, { backgroundColor: "#FFE8EE" }]}>
               <Heart size={28} color="#E94444" />
             </View>
             <Text style={styles.statNumber}>{favorites.length}</Text>
             <Text style={styles.statLabel}>Favorites</Text>
-          </View>
-        </Animated.View>
-
-        <Animated.View
-          style={[
-            styles.section,
-            {
-              opacity: fadeAnim,
-              transform: [
-                {
-                  translateY: slideAnim.interpolate({
-                    inputRange: [0, 30],
-                    outputRange: [0, 40],
-                  }),
-                },
-              ],
-            },
-          ]}
-        >
-          <Text style={styles.sectionTitle}>My Favorites</Text>
-
-          {favoriteSpots.length === 0 ? (
-            <View style={styles.emptyFavContainer}>
-              <Heart size={36} color="#D0D0D0" />
-              <Text style={styles.emptyFavText}>No favorites yet</Text>
-            </View>
-          ) : (
-            favoriteSpots.map((spot) => (
-              <TouchableOpacity
-                key={spot.id}
-                style={styles.favItem}
-                activeOpacity={0.8}
-                onPress={() => router.push(`/spot/${spot.id}` as any)}
-              >
-                <Image
-                  source={resolveImageSource(spot.image)}
-                  style={styles.favItemImage}
-                />
-                <View style={styles.favItemInfo}>
-                  <Text style={styles.favItemName} numberOfLines={1}>
-                    {spot.name}
-                  </Text>
-                  <View style={styles.favItemLocation}>
-                    <MapPin size={12} color="#888" />
-                    <Text style={styles.favItemLocationText} numberOfLines={1}>
-                      {spot.location}
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  style={styles.favRemoveBtn}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(spot.id);
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <Trash2 size={16} color="#E94444" />
-                </TouchableOpacity>
-              </TouchableOpacity>
-            ))
-          )}
+            <ChevronRight size={16} color="#BBBBBB" style={styles.statArrow} />
+          </TouchableOpacity>
         </Animated.View>
 
         <Animated.View
@@ -328,6 +269,11 @@ const styles = StyleSheet.create({
     color: "#666666",
     textAlign: "center",
   },
+  statArrow: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+  },
   section: {
     marginBottom: 32,
   },
@@ -406,65 +352,5 @@ const styles = StyleSheet.create({
     color: "#CCCCCC",
     marginTop: 4,
   },
-  emptyFavContainer: {
-    alignItems: "center",
-    paddingVertical: 28,
-    gap: 10,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(17, 122, 122, 0.06)",
-  },
-  emptyFavText: {
-    fontSize: 14,
-    fontWeight: "500" as const,
-    color: "#AAAAAA",
-  },
-  favItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 12,
-    marginBottom: 10,
-    gap: 12,
-    boxShadow: "0px 2px 8px rgba(17, 122, 122, 0.06)",
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: "rgba(17, 122, 122, 0.06)",
-  },
-  favItemImage: {
-    width: 52,
-    height: 52,
-    borderRadius: 14,
-    backgroundColor: "#F0F0F0",
-  },
-  favItemInfo: {
-    flex: 1,
-    gap: 4,
-  },
-  favItemName: {
-    fontSize: 15,
-    fontWeight: "700" as const,
-    color: "#1A1A1A",
-  },
-  favItemLocation: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  favItemLocationText: {
-    fontSize: 12,
-    fontWeight: "500" as const,
-    color: "#888",
-    flex: 1,
-  },
-  favRemoveBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#FFF0F0",
-    justifyContent: "center",
-    alignItems: "center",
-  },
+
 });

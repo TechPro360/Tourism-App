@@ -81,6 +81,8 @@ function RootLayoutNav() {
       <Stack.Screen name="place/[id]" options={{ headerShown: false, animation: "slide_from_right" }} />
       <Stack.Screen name="event/[id]" options={{ headerShown: false, animation: "slide_from_right" }} />
       <Stack.Screen name="emergency-hotlines" options={{ headerShown: false, animation: "slide_from_right" }} />
+      <Stack.Screen name="explored-places" options={{ headerShown: false, animation: "slide_from_right" }} />
+      <Stack.Screen name="favorites-list" options={{ headerShown: false, animation: "slide_from_right" }} />
     </Stack>
   );
 }

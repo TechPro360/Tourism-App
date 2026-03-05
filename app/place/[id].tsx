@@ -133,40 +133,6 @@ export default function PlaceDetailScreen() {
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={[styles.headerOverlay, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          activeOpacity={0.7}
-        >
-          <ArrowLeft size={22} color="#FFFFFF" />
-        </TouchableOpacity>
-
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handleSharePress}
-            activeOpacity={0.7}
-          >
-            <Share2 size={22} color="#FFFFFF" />
-          </TouchableOpacity>
-
-          <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={handleFavoritePress}
-              activeOpacity={0.7}
-            >
-              <Heart
-                size={22}
-                color={favorite ? "#E94444" : "#FFFFFF"}
-                fill={favorite ? "#E94444" : "transparent"}
-              />
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
-      </View>
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
@@ -175,32 +141,68 @@ export default function PlaceDetailScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <Animated.ScrollView
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          style={styles.imageCarousel}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-            { useNativeDriver: false }
-          )}
-          scrollEventThrottle={16}
-        >
-          {place.images.map((image, index) => (
-            <Animated.View
-              key={index}
-              style={[
-                styles.carouselImageWrapper,
-                {
-                  opacity: fadeAnim,
-                  transform: [{ scale: scaleAnim }],
-                },
-              ]}
+        <View style={styles.heroWrapper}>
+          <Animated.ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            style={styles.imageCarousel}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: false }
+            )}
+            scrollEventThrottle={16}
+          >
+            {place.images.map((image, index) => (
+              <Animated.View
+                key={index}
+                style={[
+                  styles.carouselImageWrapper,
+                  {
+                    opacity: fadeAnim,
+                    transform: [{ scale: scaleAnim }],
+                  },
+                ]}
+              >
+                <Image source={resolveImageSource(image)} style={styles.carouselImage} />
+              </Animated.View>
+            ))}
+          </Animated.ScrollView>
+
+          <View style={[styles.headerOverlay, { paddingTop: insets.top + 8 }]}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => router.back()}
+              activeOpacity={0.7}
             >
-              <Image source={resolveImageSource(image)} style={styles.carouselImage} />
-            </Animated.View>
-          ))}
-        </Animated.ScrollView>
+              <ArrowLeft size={22} color="#FFFFFF" />
+            </TouchableOpacity>
+
+            <View style={styles.headerActions}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={handleSharePress}
+                activeOpacity={0.7}
+              >
+                <Share2 size={22} color="#FFFFFF" />
+              </TouchableOpacity>
+
+              <Animated.View style={{ transform: [{ scale: heartScale }] }}>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={handleFavoritePress}
+                  activeOpacity={0.7}
+                >
+                  <Heart
+                    size={22}
+                    color={favorite ? "#E94444" : "#FFFFFF"}
+                    fill={favorite ? "#E94444" : "transparent"}
+                  />
+                </TouchableOpacity>
+              </Animated.View>
+            </View>
+          </View>
+        </View>
 
         <View style={styles.paginationContainer}>
           {place.images.map((_, index) => {
@@ -379,6 +381,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingTop: 0,
+  },
+  heroWrapper: {
+    height: 360,
   },
   imageCarousel: {
     height: 360,

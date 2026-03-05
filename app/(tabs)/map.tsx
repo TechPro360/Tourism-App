@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   Image,
   TouchableOpacity,
   Animated,
@@ -25,9 +24,22 @@ export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<"all" | "city" | "municipality">("all");
   const cardAnims = useRef(municipalities.map(() => new Animated.Value(0))).current;
+
+  const HEADER_HEIGHT = 90;
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_HEIGHT],
+    outputRange: [HEADER_HEIGHT, 0],
+    extrapolate: "clamp",
+  });
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_HEIGHT * 0.6],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -76,7 +88,16 @@ export default function MapScreen() {
         style={styles.backgroundGradient}
       />
 
-      <Animated.View style={[styles.header, { opacity: fadeAnim }]}>
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            opacity: Animated.multiply(fadeAnim, headerOpacity),
+            height: headerHeight,
+            overflow: "hidden" as const,
+          },
+        ]}
+      >
         <View style={styles.headerTop}>
           <View>
             <Text style={styles.headerTitle}>Explore</Text>
@@ -141,13 +162,18 @@ export default function MapScreen() {
         ))}
       </Animated.View>
 
-      <ScrollView
+      <Animated.ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
           { paddingBottom: insets.bottom + 100 },
         ]}
         showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
       >
         {filteredMunicipalities.length === 0 ? (
           <Animated.View style={[styles.emptyContainer, { opacity: fadeAnim }]}>
@@ -229,7 +255,7 @@ export default function MapScreen() {
             })}
           </View>
         )}
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 }

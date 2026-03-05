@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   Image,
   TouchableOpacity,
   Animated,
@@ -30,6 +29,28 @@ export default function CityPlacesScreen() {
   const insets = useSafeAreaInsets();
   const headerAnim = useRef(new Animated.Value(0)).current;
   const contentAnim = useRef(new Animated.Value(0)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const HERO_MAX = 260;
+  const HERO_MIN = insets.top + 56;
+
+  const heroHeight = scrollY.interpolate({
+    inputRange: [0, HERO_MAX - HERO_MIN],
+    outputRange: [HERO_MAX, HERO_MIN],
+    extrapolate: "clamp",
+  });
+
+  const heroContentOpacity = scrollY.interpolate({
+    inputRange: [0, 80],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+
+  const compactTitleOpacity = scrollY.interpolate({
+    inputRange: [60, 140],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
 
   const { toggleFavorite, isFavorite } = useAppContext();
 
@@ -77,7 +98,7 @@ export default function CityPlacesScreen() {
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <Animated.View style={[styles.heroContainer, { opacity: headerAnim, marginTop: insets.top }]}>
+      <Animated.View style={[styles.heroContainer, { opacity: headerAnim, height: heroHeight }]}>
         <Image
           source={resolveImageSource(municipality.image)}
           style={styles.heroImage}
@@ -88,7 +109,7 @@ export default function CityPlacesScreen() {
           style={styles.heroGradient}
         />
 
-        <View style={[styles.headerOverlay, { paddingTop: 8 }]}>
+        <View style={[styles.headerOverlay, { paddingTop: insets.top + 8 }]}>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
@@ -96,13 +117,23 @@ export default function CityPlacesScreen() {
           >
             <ArrowLeft size={22} color="#FFFFFF" />
           </TouchableOpacity>
+          <Animated.Text
+            style={[
+              styles.compactTitle,
+              { opacity: compactTitleOpacity },
+            ]}
+            numberOfLines={1}
+          >
+            {municipality.name}
+          </Animated.Text>
+          <View style={{ width: 42 }} />
         </View>
 
         <Animated.View
           style={[
             styles.heroContent,
             {
-              opacity: headerAnim,
+              opacity: Animated.multiply(headerAnim, heroContentOpacity),
               transform: [
                 {
                   translateY: headerAnim.interpolate({
@@ -140,13 +171,18 @@ export default function CityPlacesScreen() {
         </Animated.View>
       </Animated.View>
 
-      <ScrollView
+      <Animated.ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
           { paddingBottom: insets.bottom + 40 },
         ]}
         showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
       >
         <Animated.View
           style={[
@@ -181,7 +217,7 @@ export default function CityPlacesScreen() {
             onFavorite={() => handleFavoritePress(place.id)}
           />
         ))}
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 }
@@ -297,7 +333,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F0F7F4",
   },
   heroContainer: {
-    height: 260,
     overflow: "hidden",
   },
   heroImage: {
@@ -322,6 +357,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     zIndex: 10,
+  },
+  compactTitle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: "700" as const,
+    color: "#FFFFFF",
+    textAlign: "center",
+    marginHorizontal: 12,
   },
   backButton: {
     width: 42,

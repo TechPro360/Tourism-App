@@ -161,6 +161,45 @@ export default function EventDetailScreen() {
             style={styles.heroGradient}
           />
 
+          <View style={[styles.heroTopBar, { paddingTop: insets.top + 8 }]}>
+            <TouchableOpacity
+              style={styles.heroBackBtn}
+              onPress={() => router.back()}
+              activeOpacity={0.8}
+            >
+              <ArrowLeft size={22} color="#FFF" />
+            </TouchableOpacity>
+            <View style={styles.heroActions}>
+              <TouchableOpacity
+                style={styles.heroActionBtn}
+                onPress={() => setNotifyVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Bell size={20} color="#FFF" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.heroActionBtn}
+                onPress={() => setShareVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Share2 size={20} color="#FFF" />
+              </TouchableOpacity>
+              <Animated.View style={{ transform: [{ scale: heartScale }] }}>
+                <TouchableOpacity
+                  style={styles.heroActionBtn}
+                  onPress={handleFavoritePress}
+                  activeOpacity={0.8}
+                >
+                  <Heart
+                    size={20}
+                    color={favorite ? "#E94444" : "#FFF"}
+                    fill={favorite ? "#E94444" : "transparent"}
+                  />
+                </TouchableOpacity>
+              </Animated.View>
+            </View>
+          </View>
+
           <View style={styles.heroBottom}>
             <View style={[styles.categoryPill, { backgroundColor: colors.bg }]}>
               <Text style={[styles.categoryPillText, { color: colors.text }]}>
@@ -262,45 +301,6 @@ export default function EventDetailScreen() {
           )}
         </Animated.View>
       </ScrollView>
-
-      <View style={[styles.heroTopBar, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity
-          style={styles.heroBackBtn}
-          onPress={() => router.back()}
-          activeOpacity={0.8}
-        >
-          <ArrowLeft size={22} color="#FFF" />
-        </TouchableOpacity>
-        <View style={styles.heroActions}>
-          <TouchableOpacity
-            style={styles.heroActionBtn}
-            onPress={() => setNotifyVisible(true)}
-            activeOpacity={0.8}
-          >
-            <Bell size={20} color="#FFF" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.heroActionBtn}
-            onPress={() => setShareVisible(true)}
-            activeOpacity={0.8}
-          >
-            <Share2 size={20} color="#FFF" />
-          </TouchableOpacity>
-          <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-            <TouchableOpacity
-              style={styles.heroActionBtn}
-              onPress={handleFavoritePress}
-              activeOpacity={0.8}
-            >
-              <Heart
-                size={20}
-                color={favorite ? "#E94444" : "#FFF"}
-                fill={favorite ? "#E94444" : "transparent"}
-              />
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
-      </View>
 
       <ShareSheet
         visible={shareVisible}
