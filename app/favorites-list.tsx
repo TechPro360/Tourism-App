@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -14,8 +14,8 @@ import { ArrowLeft, Heart, MapPin, Trash2 } from "lucide-react-native";
 import { useRouter, Stack } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAppContext } from "@/contexts/AppContext";
-import { touristSpots } from "@/constants/touristSpots";
 import { resolveImageSource } from "@/utils/imageHelper";
+import { getAllFavoriteItems } from "@/utils/allItems";
 
 export default function FavoritesListScreen() {
   const insets = useSafeAreaInsets();
@@ -23,8 +23,9 @@ export default function FavoritesListScreen() {
   const { favorites, toggleFavorite } = useAppContext();
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const favoriteSpots = touristSpots.filter((spot) =>
-    favorites.includes(spot.id)
+  const favoriteItems = useMemo(
+    () => getAllFavoriteItems(favorites),
+    [favorites]
   );
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export default function FavoritesListScreen() {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Favorites</Text>
         <View style={styles.headerRight}>
-          <Text style={styles.countText}>{favoriteSpots.length}</Text>
+          <Text style={styles.countText}>{favoriteItems.length}</Text>
         </View>
       </View>
 
@@ -66,7 +67,7 @@ export default function FavoritesListScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {favoriteSpots.length === 0 ? (
+        {favoriteItems.length === 0 ? (
           <Animated.View style={[styles.emptyContainer, { opacity: fadeAnim }]}>
             <Heart size={64} color="#D0D0D0" />
             <Text style={styles.emptyTitle}>No Favorites Yet</Text>
@@ -76,18 +77,18 @@ export default function FavoritesListScreen() {
           </Animated.View>
         ) : (
           <View style={styles.cardsContainer}>
-            {favoriteSpots.map((spot) => (
+            {favoriteItems.map((item) => (
               <Animated.View
-                key={spot.id}
+                key={item.id}
                 style={[styles.cardWrapper, { opacity: fadeAnim }]}
               >
                 <TouchableOpacity
                   style={styles.card}
                   activeOpacity={0.9}
-                  onPress={() => router.push(`/spot/${spot.id}` as any)}
+                  onPress={() => router.push(item.route as any)}
                 >
                   <Image
-                    source={resolveImageSource(spot.image)}
+                    source={resolveImageSource(item.image)}
                     style={styles.cardImage}
                   />
                   <LinearGradient
@@ -97,12 +98,12 @@ export default function FavoritesListScreen() {
                     <View style={styles.cardContent}>
                       <View style={styles.cardInfo}>
                         <Text style={styles.cardName} numberOfLines={2}>
-                          {spot.name}
+                          {item.name}
                         </Text>
                         <View style={styles.locationRow}>
                           <MapPin size={14} color="#FFFFFF" />
                           <Text style={styles.cardLocation} numberOfLines={1}>
-                            {spot.location}
+                            {item.location}
                           </Text>
                         </View>
                       </View>
@@ -113,7 +114,7 @@ export default function FavoritesListScreen() {
                     style={styles.removeButton}
                     onPress={(e) => {
                       e.stopPropagation();
-                      toggleFavorite(spot.id);
+                      toggleFavorite(item.id);
                     }}
                   >
                     <Trash2 size={20} color="#FFFFFF" />

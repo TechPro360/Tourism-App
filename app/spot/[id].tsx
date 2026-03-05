@@ -33,6 +33,7 @@ import { touristSpots } from "@/constants/touristSpots";
 import { useAppContext } from "@/contexts/AppContext";
 import { resolveImageSource } from "@/utils/imageHelper";
 import ShareSheet from "@/components/ShareSheet";
+import ActionToast from "@/components/ActionToast";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -53,6 +54,15 @@ export default function SpotDetailScreen() {
 
   const [heartScale] = useState(new Animated.Value(1));
   const [shareVisible, setShareVisible] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastIcon, setToastIcon] = useState<React.ReactNode>(null);
+
+  const showToast = (icon: React.ReactNode, message: string) => {
+    setToastIcon(icon);
+    setToastMessage(message);
+    setToastVisible(true);
+  };
 
   useEffect(() => {
     Animated.parallel([
@@ -84,10 +94,20 @@ export default function SpotDetailScreen() {
     ]).start();
 
     toggleFavorite(id as string);
+    const willBeFav = !favorite;
+    showToast(
+      <Heart size={28} color="#FFFFFF" fill={willBeFav ? "#E94444" : "transparent"} />,
+      willBeFav ? "Added to Favorites" : "Removed from Favorites"
+    );
   };
 
   const handleExplorePress = () => {
     toggleExplored(id as string);
+    const willBeExplored = !explored;
+    showToast(
+      <CheckCircle2 size={28} color="#FFFFFF" fill={willBeExplored ? "#117A7A" : "transparent"} />,
+      willBeExplored ? "Marked as Visited" : "Unmarked as Visited"
+    );
   };
 
   const handleLocationPress = () => {
@@ -362,6 +382,13 @@ export default function SpotDetailScreen() {
         title={spot.name}
         message={shareMessage}
         url={spot.website}
+      />
+
+      <ActionToast
+        visible={toastVisible}
+        icon={toastIcon}
+        message={toastMessage}
+        onHide={() => setToastVisible(false)}
       />
     </View>
   );

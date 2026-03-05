@@ -28,6 +28,7 @@ import { upcomingEvents, eventCategoryColors } from "@/constants/events";
 import { useAppContext } from "@/contexts/AppContext";
 import ShareSheet from "@/components/ShareSheet";
 import NotifySheet from "@/components/NotifySheet";
+import ActionToast from "@/components/ActionToast";
 
 function formatFullDate(dateStr: string): string {
   const date = new Date(dateStr);
@@ -63,6 +64,15 @@ export default function EventDetailScreen() {
 
   const [shareVisible, setShareVisible] = useState(false);
   const [notifyVisible, setNotifyVisible] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastIcon, setToastIcon] = useState<React.ReactNode>(null);
+
+  const showToast = (icon: React.ReactNode, message: string) => {
+    setToastIcon(icon);
+    setToastMessage(message);
+    setToastVisible(true);
+  };
 
   const event = upcomingEvents.find((e) => e.id === id);
 
@@ -121,7 +131,12 @@ export default function EventDetailScreen() {
         useNativeDriver: true,
       }),
     ]).start();
+    const willBeFav = !favorite;
     toggleFavorite(id as string);
+    showToast(
+      <Heart size={28} color="#FFFFFF" fill={willBeFav ? "#E94444" : "transparent"} />,
+      willBeFav ? "Added to Favorites" : "Removed from Favorites"
+    );
   };
 
   const handleOpenMap = () => {
@@ -138,6 +153,15 @@ export default function EventDetailScreen() {
   const handleNotifySelect = (option: string) => {
     if (option) {
       console.log(`Notification set: ${option} before ${event.title}`);
+      const labelMap: Record<string, string> = {
+        day: "1 day before",
+        week: "1 week before",
+        month: "1 month before",
+      };
+      showToast(
+        <Bell size={28} color="#FFFFFF" />,
+        `Reminder set: ${labelMap[option] || option}`
+      );
     }
   };
 
@@ -314,6 +338,13 @@ export default function EventDetailScreen() {
         onClose={() => setNotifyVisible(false)}
         eventTitle={event.title}
         onSelect={handleNotifySelect}
+      />
+
+      <ActionToast
+        visible={toastVisible}
+        icon={toastIcon}
+        message={toastMessage}
+        onHide={() => setToastVisible(false)}
       />
     </View>
   );

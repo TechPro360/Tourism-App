@@ -30,6 +30,7 @@ import { municipalities } from "@/constants/municipalities";
 import { useAppContext } from "@/contexts/AppContext";
 import { resolveImageSource } from "@/utils/imageHelper";
 import ShareSheet from "@/components/ShareSheet";
+import ActionToast from "@/components/ActionToast";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -49,6 +50,15 @@ export default function PlaceDetailScreen() {
 
   const favorite = isFavorite(id as string);
   const [shareVisible, setShareVisible] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastIcon, setToastIcon] = useState<React.ReactNode>(null);
+
+  const showToast = useCallback((icon: React.ReactNode, message: string) => {
+    setToastIcon(icon);
+    setToastMessage(message);
+    setToastVisible(true);
+  }, []);
 
   useEffect(() => {
     Animated.parallel([
@@ -78,8 +88,13 @@ export default function PlaceDetailScreen() {
         useNativeDriver: true,
       }),
     ]).start();
+    const willBeFav = !favorite;
     toggleFavorite(id as string);
-  }, [heartScale, toggleFavorite, id]);
+    showToast(
+      <Heart size={28} color="#FFFFFF" fill={willBeFav ? "#E94444" : "transparent"} />,
+      willBeFav ? "Added to Favorites" : "Removed from Favorites"
+    );
+  }, [heartScale, toggleFavorite, id, favorite, showToast]);
 
   const handleLocationPress = useCallback(() => {
     if (!place) return;
@@ -335,6 +350,13 @@ export default function PlaceDetailScreen() {
         title={place.name}
         message={shareMessage}
         url={place.website}
+      />
+
+      <ActionToast
+        visible={toastVisible}
+        icon={toastIcon}
+        message={toastMessage}
+        onHide={() => setToastVisible(false)}
       />
     </View>
   );

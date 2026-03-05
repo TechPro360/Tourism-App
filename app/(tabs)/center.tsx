@@ -14,6 +14,7 @@ import { ChevronRight, Compass, Navigation, Heart } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { resolveImageSource } from "@/utils/imageHelper";
 import { useAppContext } from "@/contexts/AppContext";
+import ActionToast from "@/components/ActionToast";
 
 
 interface Tab {
@@ -209,6 +210,15 @@ export default function CenterScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("adventure");
   const { toggleFavorite, isFavorite } = useAppContext();
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastIcon, setToastIcon] = useState<React.ReactNode>(null);
+
+  const showToast = useCallback((icon: React.ReactNode, message: string) => {
+    setToastIcon(icon);
+    setToastMessage(message);
+    setToastVisible(true);
+  }, []);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const logoScale = useRef(new Animated.Value(0.85)).current;
@@ -418,7 +428,14 @@ export default function CenterScreen() {
 
           <TouchableOpacity
             style={styles.favoriteButton}
-            onPress={() => toggleFavorite(item.spotId)}
+            onPress={() => {
+              const willBeFav = !favorite;
+              toggleFavorite(item.spotId);
+              showToast(
+                <Heart size={28} color="#FFFFFF" fill={willBeFav ? "#E94444" : "transparent"} />,
+                willBeFav ? "Added to Favorites" : "Removed from Favorites"
+              );
+            }}
             activeOpacity={0.7}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
@@ -453,7 +470,7 @@ export default function CenterScreen() {
         </TouchableOpacity>
       </Animated.View>
     );
-  }, [activeTab, activeTabData, cardAnimations, router, isFavorite, toggleFavorite]);
+  }, [activeTab, activeTabData, cardAnimations, router, isFavorite, toggleFavorite, showToast]);
 
   return (
     <View style={styles.container}>
@@ -532,6 +549,13 @@ export default function CenterScreen() {
           {activeContent.map(renderCard)}
         </Animated.ScrollView>
       </Animated.View>
+
+      <ActionToast
+        visible={toastVisible}
+        icon={toastIcon}
+        message={toastMessage}
+        onHide={() => setToastVisible(false)}
+      />
     </View>
   );
 }

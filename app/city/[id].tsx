@@ -52,6 +52,32 @@ export default function CityPlacesScreen() {
     extrapolate: "clamp",
   });
 
+  const heroImageOpacity = scrollY.interpolate({
+    inputRange: [0, HERO_MAX - HERO_MIN],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+
+  const headerWhiteBgOpacity = scrollY.interpolate({
+    inputRange: [(HERO_MAX - HERO_MIN) * 0.5, HERO_MAX - HERO_MIN],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
+
+  const compactTitleColor = scrollY.interpolate({
+    inputRange: [(HERO_MAX - HERO_MIN) * 0.6, HERO_MAX - HERO_MIN],
+    outputRange: ["#FFFFFF", "#1A1A1A"],
+    extrapolate: "clamp",
+  });
+
+  const backBtnBg = scrollY.interpolate({
+    inputRange: [(HERO_MAX - HERO_MIN) * 0.6, HERO_MAX - HERO_MIN],
+    outputRange: ["rgba(0,0,0,0.35)", "rgba(17,122,122,0.12)"],
+    extrapolate: "clamp",
+  });
+
+
+
   const { toggleFavorite, isFavorite } = useAppContext();
 
   const municipality = municipalities.find((m) => m.id === id);
@@ -99,28 +125,42 @@ export default function CityPlacesScreen() {
       <Stack.Screen options={{ headerShown: false }} />
 
       <Animated.View style={[styles.heroContainer, { opacity: headerAnim, height: heroHeight }]}>
-        <Image
-          source={resolveImageSource(municipality.image)}
-          style={styles.heroImage}
-        />
-        <LinearGradient
-          colors={["rgba(0,0,0,0.4)", "transparent", "rgba(0,0,0,0.65)"]}
-          locations={[0, 0.4, 1]}
-          style={styles.heroGradient}
+        <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: heroImageOpacity }]}>
+          <Image
+            source={resolveImageSource(municipality.image)}
+            style={styles.heroImage}
+          />
+          <LinearGradient
+            colors={["rgba(0,0,0,0.4)", "transparent", "rgba(0,0,0,0.65)"]}
+            locations={[0, 0.4, 1]}
+            style={styles.heroGradient}
+          />
+        </Animated.View>
+
+        <Animated.View
+          style={[
+            StyleSheet.absoluteFillObject,
+            styles.heroWhiteBg,
+            { opacity: headerWhiteBgOpacity },
+          ]}
         />
 
         <View style={[styles.headerOverlay, { paddingTop: insets.top + 8 }]}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-            activeOpacity={0.7}
-          >
-            <ArrowLeft size={22} color="#FFFFFF" />
-          </TouchableOpacity>
+          <Animated.View style={[styles.backButton, { backgroundColor: backBtnBg }]}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              activeOpacity={0.7}
+              style={styles.backButtonInner}
+            >
+              <Animated.View>
+                <ArrowLeft size={22} color="#117A7A" />
+              </Animated.View>
+            </TouchableOpacity>
+          </Animated.View>
           <Animated.Text
             style={[
               styles.compactTitle,
-              { opacity: compactTitleOpacity },
+              { opacity: compactTitleOpacity, color: compactTitleColor },
             ]}
             numberOfLines={1}
           >
@@ -340,6 +380,15 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "cover",
   },
+  heroWhiteBg: {
+    backgroundColor: "#F0F7F4",
+  },
+  backButtonInner: {
+    width: 42,
+    height: 42,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   heroGradient: {
     position: "absolute",
     left: 0,
@@ -362,7 +411,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     fontWeight: "700" as const,
-    color: "#FFFFFF",
     textAlign: "center",
     marginHorizontal: 12,
   },
@@ -370,9 +418,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: "rgba(0,0,0,0.35)",
-    justifyContent: "center",
-    alignItems: "center",
+    overflow: "hidden",
   },
   heroContent: {
     position: "absolute",

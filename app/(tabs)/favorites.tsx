@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -14,8 +14,8 @@ import { Heart, MapPin, Trash2 } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAppContext } from "@/contexts/AppContext";
-import { touristSpots } from "@/constants/touristSpots";
 import { resolveImageSource } from "@/utils/imageHelper";
+import { getAllFavoriteItems } from "@/utils/allItems";
 
 export default function FavoritesScreen() {
   const insets = useSafeAreaInsets();
@@ -23,21 +23,18 @@ export default function FavoritesScreen() {
   const { favorites, toggleFavorite } = useAppContext();
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const favoriteSpots = touristSpots.filter((spot) =>
-    favorites.includes(spot.id)
+  const favoriteItems = useMemo(
+    () => getAllFavoriteItems(favorites),
+    [favorites]
   );
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
-      useNativeDriver: Platform.OS !== 'web',
+      useNativeDriver: Platform.OS !== "web",
     }).start();
   }, [fadeAnim]);
-
-  const handleRemoveFavorite = (spotId: string) => {
-    toggleFavorite(spotId);
-  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -49,7 +46,7 @@ export default function FavoritesScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>My Favorites</Text>
         <Text style={styles.headerSubtitle}>
-          {favoriteSpots.length} saved {favoriteSpots.length === 1 ? "place" : "places"}
+          {favoriteItems.length} saved {favoriteItems.length === 1 ? "place" : "places"}
         </Text>
       </View>
 
@@ -58,27 +55,19 @@ export default function FavoritesScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
       >
-        {favoriteSpots.length === 0 ? (
-          <Animated.View
-            style={[
-              styles.emptyContainer,
-              {
-                opacity: fadeAnim,
-              },
-            ]}
-          >
+        {favoriteItems.length === 0 ? (
+          <Animated.View style={[styles.emptyContainer, { opacity: fadeAnim }]}>
             <Heart size={64} color="#D0D0D0" />
             <Text style={styles.emptyTitle}>No Favorites Yet</Text>
             <Text style={styles.emptyText}>
-              Start exploring and save your favorite places by tapping the heart
-              icon
+              Start exploring and save your favorite places by tapping the heart icon
             </Text>
           </Animated.View>
         ) : (
           <View style={styles.cardsContainer}>
-            {favoriteSpots.map((spot, index) => (
+            {favoriteItems.map((item) => (
               <Animated.View
-                key={spot.id}
+                key={item.id}
                 style={[
                   styles.cardWrapper,
                   {
@@ -97,9 +86,9 @@ export default function FavoritesScreen() {
                 <TouchableOpacity
                   style={styles.card}
                   activeOpacity={0.9}
-                  onPress={() => router.push(`/spot/${spot.id}` as any)}
+                  onPress={() => router.push(item.route as any)}
                 >
-                  <Image source={resolveImageSource(spot.image)} style={styles.cardImage} />
+                  <Image source={resolveImageSource(item.image)} style={styles.cardImage} />
                   <LinearGradient
                     colors={["transparent", "rgba(0,0,0,0.8)"]}
                     style={styles.cardGradient}
@@ -107,12 +96,12 @@ export default function FavoritesScreen() {
                     <View style={styles.cardContent}>
                       <View style={styles.cardInfo}>
                         <Text style={styles.cardName} numberOfLines={2}>
-                          {spot.name}
+                          {item.name}
                         </Text>
                         <View style={styles.locationRow}>
                           <MapPin size={14} color="#FFFFFF" />
                           <Text style={styles.cardLocation} numberOfLines={1}>
-                            {spot.location}
+                            {item.location}
                           </Text>
                         </View>
                       </View>
@@ -123,7 +112,7 @@ export default function FavoritesScreen() {
                     style={styles.removeButton}
                     onPress={(e) => {
                       e.stopPropagation();
-                      handleRemoveFavorite(spot.id);
+                      toggleFavorite(item.id);
                     }}
                   >
                     <Trash2 size={20} color="#FFFFFF" />

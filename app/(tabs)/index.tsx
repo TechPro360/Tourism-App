@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -14,6 +14,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { Heart, Navigation, ChevronRight } from "lucide-react-native";
+import { useAppContext } from "@/contexts/AppContext";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -38,6 +40,7 @@ interface DestinationCard {
   name: string;
   image: string;
   location: string;
+  spotId: string;
 }
 
 const featuredDestinations: DestinationCard[] = [
@@ -46,30 +49,35 @@ const featuredDestinations: DestinationCard[] = [
     name: "Minalungao National Park",
     location: "General Tinio",
     image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800",
+    spotId: "1",
   },
   {
     id: "2",
     name: "Pantabangan Lake",
     location: "Pantabangan",
     image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+    spotId: "2",
   },
   {
     id: "3",
     name: "Gabaldon Falls",
     location: "Gabaldon",
     image: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800",
+    spotId: "3",
   },
   {
     id: "4",
     name: "Dupinga River",
     location: "Carranglan",
     image: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800",
+    spotId: "8",
   },
   {
     id: "5",
     name: "Cabu Bridge",
     location: "San Antonio",
     image: "https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=800",
+    spotId: "9",
   },
 ];
 
@@ -82,25 +90,25 @@ interface CategoryButtonProps {
   }[];
 }
 
-function CategoryButton({ category, index, categoryAnimations }: CategoryButtonProps) {
+const CategoryButton = React.memo(function CategoryButton({ category, index, categoryAnimations }: CategoryButtonProps) {
   const scaleValue = useRef(new Animated.Value(1)).current;
   const router = useRouter();
 
-  const handlePressIn = () => {
+  const handlePressIn = useCallback(() => {
     Animated.spring(scaleValue, {
       toValue: 0.95,
       useNativeDriver: Platform.OS !== 'web',
     }).start();
-  };
+  }, [scaleValue]);
 
-  const handlePressOut = () => {
+  const handlePressOut = useCallback(() => {
     Animated.spring(scaleValue, {
       toValue: 1,
       friction: 3,
       tension: 40,
       useNativeDriver: Platform.OS !== 'web',
     }).start();
-  };
+  }, [scaleValue]);
 
   return (
     <Animated.View
@@ -139,7 +147,111 @@ function CategoryButton({ category, index, categoryAnimations }: CategoryButtonP
       </TouchableOpacity>
     </Animated.View>
   );
+});
+
+interface DestinationCardComponentProps {
+  dest: DestinationCard;
+  index: number;
+  scrollX: Animated.Value;
+  fadeAnim: Animated.Value;
 }
+
+const DestinationCardComponent = React.memo(function DestinationCardComponent({
+  dest,
+  index,
+  scrollX,
+  fadeAnim,
+}: DestinationCardComponentProps) {
+  const router = useRouter();
+  const { toggleFavorite, isFavorite } = useAppContext();
+  const favorite = isFavorite(dest.spotId);
+  const heartScale = useRef(new Animated.Value(1)).current;
+
+  const cardWidth = SCREEN_WIDTH - 60;
+  const inputRange = [
+    (index - 1) * cardWidth,
+    index * cardWidth,
+    (index + 1) * cardWidth,
+  ];
+
+  const scale = scrollX.interpolate({
+    inputRange,
+    outputRange: [0.92, 1, 0.92],
+    extrapolate: "clamp",
+  });
+
+  const opacity = scrollX.interpolate({
+    inputRange,
+    outputRange: [0.6, 1, 0.6],
+    extrapolate: "clamp",
+  });
+
+  const handleFavorite = useCallback(() => {
+    Animated.sequence([
+      Animated.spring(heartScale, {
+        toValue: 1.3,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+      Animated.spring(heartScale, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    toggleFavorite(dest.spotId);
+  }, [heartScale, toggleFavorite, dest.spotId]);
+
+  return (
+    <Animated.View
+      style={[
+        styles.destinationCard,
+        {
+          transform: [{ scale }],
+          opacity,
+        },
+      ]}
+    >
+      <TouchableOpacity
+        style={styles.destinationTouchable}
+        activeOpacity={0.9}
+        onPress={() => router.push(`/spot/${dest.spotId}` as any)}
+      >
+        <Image
+          source={{ uri: dest.image }}
+          style={styles.destinationImage}
+        />
+        <LinearGradient
+          colors={["transparent", "rgba(0,0,0,0.75)"]}
+          style={styles.destinationGradient}
+        >
+          <Text style={styles.destinationName} numberOfLines={1}>{dest.name}</Text>
+          <View style={styles.destinationFooter}>
+            <View style={styles.destinationLocationRow}>
+              <Navigation size={12} color="rgba(255,255,255,0.7)" />
+              <Text style={styles.destinationLocation}>{dest.location}</Text>
+            </View>
+            <ChevronRight size={16} color="rgba(255,255,255,0.6)" />
+          </View>
+        </LinearGradient>
+
+        <Animated.View style={[styles.destFavoriteBtn, { transform: [{ scale: heartScale }] }]}>
+          <TouchableOpacity
+            onPress={handleFavorite}
+            activeOpacity={0.7}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Heart
+              size={18}
+              color={favorite ? "#E94444" : "#FFFFFF"}
+              fill={favorite ? "#E94444" : "transparent"}
+            />
+          </TouchableOpacity>
+        </Animated.View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+});
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -266,53 +378,15 @@ export default function HomeScreen() {
                 )}
                 scrollEventThrottle={16}
               >
-                {featuredDestinations.map((dest, index) => {
-                  const cardWidth = SCREEN_WIDTH - 60;
-                  const inputRange = [
-                    (index - 1) * cardWidth,
-                    index * cardWidth,
-                    (index + 1) * cardWidth,
-                  ];
-
-                  const scale = scrollX.interpolate({
-                    inputRange,
-                    outputRange: [0.9, 1, 0.9],
-                    extrapolate: "clamp",
-                  });
-
-                  const opacity = scrollX.interpolate({
-                    inputRange,
-                    outputRange: [0.6, 1, 0.6],
-                    extrapolate: "clamp",
-                  });
-
-                  return (
-                    <Animated.View
-                      key={dest.id}
-                      style={[
-                        styles.destinationCard,
-                        {
-                          transform: [{ scale }],
-                          opacity,
-                        },
-                      ]}
-                    >
-                      <TouchableOpacity style={styles.destinationTouchable}>
-                        <Image
-                          source={{ uri: dest.image }}
-                          style={styles.destinationImage}
-                        />
-                        <LinearGradient
-                          colors={["transparent", "rgba(0,0,0,0.7)"]}
-                          style={styles.destinationGradient}
-                        >
-                          <Text style={styles.destinationName}>{dest.name}</Text>
-                          <Text style={styles.destinationLocation}>{dest.location}</Text>
-                        </LinearGradient>
-                      </TouchableOpacity>
-                    </Animated.View>
-                  );
-                })}
+                {featuredDestinations.map((dest, index) => (
+                  <DestinationCardComponent
+                    key={dest.id}
+                    dest={dest}
+                    index={index}
+                    scrollX={scrollX}
+                    fadeAnim={fadeAnim}
+                  />
+                ))}
               </Animated.ScrollView>
 
               <View style={styles.paginationContainer}>
@@ -330,7 +404,7 @@ export default function HomeScreen() {
                     extrapolate: "clamp",
                   });
 
-                  const opacity = scrollX.interpolate({
+                  const dotOpacity = scrollX.interpolate({
                     inputRange,
                     outputRange: [0.3, 1, 0.3],
                     extrapolate: "clamp",
@@ -343,7 +417,7 @@ export default function HomeScreen() {
                         styles.paginationDot,
                         {
                           width: dotWidth,
-                          opacity,
+                          opacity: dotOpacity,
                         },
                       ]}
                     />
@@ -400,37 +474,6 @@ const styles = StyleSheet.create({
     width: 280,
     height: 130,
   },
-  tagline: {
-    fontSize: 16,
-    fontWeight: "600" as const,
-    color: "#FFFFFF",
-    textAlign: "center",
-    marginBottom: 24,
-    paddingHorizontal: 32,
-    textShadow: "0px 2px 6px rgba(0, 0, 0, 0.6)",
-    letterSpacing: 0.3,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    marginHorizontal: 24,
-    borderRadius: 28,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    marginBottom: 28,
-    boxShadow: "0px 4px 12px rgba(17, 122, 122, 0.15)",
-    elevation: 6,
-  },
-  searchIcon: {
-    marginRight: 12,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 15,
-    color: "#333333",
-    fontWeight: "500" as const,
-  },
   contentContainer: {
     flex: 1,
     backgroundColor: "transparent",
@@ -455,7 +498,7 @@ const styles = StyleSheet.create({
   },
   destinationCard: {
     width: SCREEN_WIDTH - 60,
-    height: 160,
+    height: 200,
     marginHorizontal: 6,
     borderRadius: 20,
     overflow: "hidden",
@@ -464,7 +507,9 @@ const styles = StyleSheet.create({
   destinationTouchable: {
     width: "100%",
     height: "100%",
-    backgroundColor: "transparent",
+    backgroundColor: "#E0EDED",
+    borderRadius: 20,
+    overflow: "hidden",
   },
   destinationImage: {
     width: "100%",
@@ -477,21 +522,41 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: "65%",
     justifyContent: "flex-end",
-    padding: 20,
+    padding: 16,
   },
   destinationName: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "700" as const,
     color: "#FFFFFF",
     marginBottom: 6,
     letterSpacing: 0.3,
   },
+  destinationFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  destinationLocationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
   destinationLocation: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: "500" as const,
-    color: "#FFFFFF",
-    opacity: 0.95,
+    color: "rgba(255,255,255,0.8)",
     letterSpacing: 0.2,
+  },
+  destFavoriteBtn: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   paginationContainer: {
     flexDirection: "row",
@@ -558,5 +623,4 @@ const styles = StyleSheet.create({
   categoryIconWhiteBg: {
     backgroundColor: "#FFFFFF",
   },
-
 });
