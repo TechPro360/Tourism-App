@@ -6,14 +6,14 @@ import {
   Animated,
   TouchableOpacity,
   Image,
-  ScrollView,
   Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import { MapPin, ChevronRight, Compass } from "lucide-react-native";
+import { ChevronRight, Compass, Navigation, Heart } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { resolveImageSource } from "@/utils/imageHelper";
+import { useAppContext } from "@/contexts/AppContext";
 
 
 interface Tab {
@@ -202,11 +202,13 @@ const tabContents: TabContent = {
   ],
 };
 
+const LOGO_HEIGHT = 126;
+
 export default function CenterScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("adventure");
-  const scrollRef = useRef<ScrollView>(null);
+  const { toggleFavorite, isFavorite } = useAppContext();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const logoScale = useRef(new Animated.Value(0.85)).current;
@@ -214,6 +216,18 @@ export default function CenterScreen() {
   const contentFade = useRef(new Animated.Value(1)).current;
   const titleSlide = useRef(new Animated.Value(20)).current;
   const titleOpacity = useRef(new Animated.Value(0)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const logoContainerHeight = scrollY.interpolate({
+    inputRange: [0, LOGO_HEIGHT],
+    outputRange: [LOGO_HEIGHT, 0],
+    extrapolate: "clamp",
+  });
+  const logoContainerOpacity = scrollY.interpolate({
+    inputRange: [0, LOGO_HEIGHT * 0.6],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
 
   const cardAnimations = useRef(
     Array(10).fill(0).map(() => ({
@@ -366,13 +380,19 @@ export default function CenterScreen() {
     );
   }, [activeTab, handleTabPress]);
 
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    { useNativeDriver: false }
+  );
+
   const renderCard = useCallback((item: ContentItem, index: number) => {
     const cardAnim = cardAnimations[index];
+    const favorite = isFavorite(item.spotId);
     return (
       <Animated.View
         key={`${activeTab}-${index}`}
         style={[
-          styles.cardOuter,
+          styles.placeCard,
           {
             opacity: cardAnim?.opacity || 1,
             transform: [
@@ -381,49 +401,59 @@ export default function CenterScreen() {
           },
         ]}
       >
-        <View style={styles.card}>
+        <TouchableOpacity
+          style={styles.placeCardTouchable}
+          activeOpacity={0.9}
+          onPress={() => router.push(`/spot/${item.spotId}` as any)}
+        >
           <Image
             source={resolveImageSource(item.image)}
-            style={styles.cardImage}
+            style={styles.placeImage}
             resizeMode="cover"
           />
           <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.4)", "rgba(0,0,0,0.75)"]}
-            style={styles.cardImageOverlay}
-            locations={[0.2, 0.6, 1]}
+            colors={["transparent", "rgba(0,0,0,0.75)"]}
+            style={styles.placeImageGradient}
           />
-          <View style={styles.cardBody}>
-            <View style={styles.cardLocationRow}>
-              <MapPin size={12} color="#FFFFFF" />
-              <Text style={styles.cardLocationText}>
-                Nueva Ecija
-              </Text>
-            </View>
-            <Text style={styles.cardTitle}>{item.title}</Text>
+
+          <TouchableOpacity
+            style={styles.favoriteButton}
+            onPress={() => toggleFavorite(item.spotId)}
+            activeOpacity={0.7}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Heart
+              size={20}
+              color={favorite ? "#E94444" : "#FFFFFF"}
+              fill={favorite ? "#E94444" : "transparent"}
+            />
+          </TouchableOpacity>
+
+          <View style={[styles.categoryBadge, { backgroundColor: activeTabData.accent }]}>
+            <Text style={styles.categoryBadgeText}>
+              {activeTabData.title}
+            </Text>
           </View>
-          <View style={styles.cardBottom}>
-            <Text style={styles.cardDesc} numberOfLines={2}>
+
+          <View style={styles.placeInfo}>
+            <Text style={styles.placeName} numberOfLines={1}>
+              {item.title}
+            </Text>
+            <Text style={styles.placeDescription} numberOfLines={2}>
               {item.description}
             </Text>
-            <View style={styles.cardFooter}>
-              <View style={[styles.cardBadge, { backgroundColor: activeTabData.accent + "15" }]}>
-                <Text style={[styles.cardBadgeText, { color: activeTabData.accent }]}>
-                  {activeTabData.title}
-                </Text>
+            <View style={styles.placeFooter}>
+              <View style={styles.placeLocationRow}>
+                <Navigation size={12} color="rgba(255,255,255,0.7)" />
+                <Text style={styles.placeLocationText}>View Details</Text>
               </View>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                style={[styles.cardArrowBtn, { backgroundColor: activeTabData.accent }]}
-                onPress={() => router.push(`/spot/${item.spotId}` as any)}
-              >
-                <ChevronRight size={16} color="#FFF" />
-              </TouchableOpacity>
+              <ChevronRight size={16} color="rgba(255,255,255,0.6)" />
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </Animated.View>
     );
-  }, [activeTab, activeTabData, cardAnimations, router]);
+  }, [activeTab, activeTabData, cardAnimations, router, isFavorite, toggleFavorite]);
 
   return (
     <View style={styles.container}>
@@ -432,12 +462,11 @@ export default function CenterScreen() {
         style={StyleSheet.absoluteFillObject}
       />
 
-      <Animated.View
+      <View
         style={[
           styles.headerArea,
           {
             paddingTop: insets.top + 8,
-            opacity: fadeAnim,
           },
         ]}
       >
@@ -445,25 +474,28 @@ export default function CenterScreen() {
           style={[
             styles.logoContainer,
             {
+              height: logoContainerHeight,
+              opacity: logoContainerOpacity,
               transform: [{ scale: logoScale }],
-              opacity: logoFade,
             },
           ]}
         >
-          <Image
-            source={categoryImages[activeTabData.headerLogo as keyof typeof categoryImages]}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          <Animated.View style={{ opacity: logoFade }}>
+            <Image
+              source={categoryImages[activeTabData.headerLogo as keyof typeof categoryImages]}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </Animated.View>
         </Animated.View>
 
-        <ScrollView
+        <Animated.ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.tabsRow}
         >
           {tabs.map(renderTabItem)}
-        </ScrollView>
+        </Animated.ScrollView>
 
         <Animated.View
           style={[
@@ -484,20 +516,21 @@ export default function CenterScreen() {
             <Text style={styles.sectionCount}>{activeContent.length} places</Text>
           </View>
         </Animated.View>
-      </Animated.View>
+      </View>
 
       <Animated.View style={[styles.contentArea, { opacity: contentFade }]}>
-        <ScrollView
-          ref={scrollRef}
+        <Animated.ScrollView
           style={styles.scrollView}
           contentContainerStyle={[
             styles.scrollContent,
             { paddingBottom: insets.bottom + 100 },
           ]}
           showsVerticalScrollIndicator={false}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
         >
           {activeContent.map(renderCard)}
-        </ScrollView>
+        </Animated.ScrollView>
       </Animated.View>
     </View>
   );
@@ -513,7 +546,8 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: "center",
-    paddingVertical: 8,
+    justifyContent: "center",
+    overflow: "hidden",
   },
   logo: {
     width: 240,
@@ -608,86 +642,92 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     gap: 18,
   },
-  cardOuter: {
-    borderRadius: 20,
+  placeCard: {
+    marginBottom: 14,
+    borderRadius: 18,
     overflow: "hidden",
-    boxShadow: "0px 6px 14px rgba(0, 0, 0, 0.12)",
-    elevation: 8,
   },
-  card: {
-    borderRadius: 20,
+  placeCardTouchable: {
+    height: 220,
+    borderRadius: 18,
     overflow: "hidden",
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.06)",
+    backgroundColor: "#E0EDED",
+    shadowColor: "#0A5A5A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 5,
   },
-  cardImage: {
+  placeImage: {
     width: "100%",
-    height: 190,
+    height: "100%",
   },
-  cardImageOverlay: {
+  placeImageGradient: {
     position: "absolute" as const,
     left: 0,
     right: 0,
-    top: 0,
-    height: 190,
+    bottom: 0,
+    height: "65%",
   },
-  cardBody: {
-    paddingHorizontal: 16,
-    paddingBottom: 10,
-    marginTop: -50,
-  },
-  cardLocationRow: {
-    flexDirection: "row",
+  favoriteButton: {
+    position: "absolute" as const,
+    top: 12,
+    right: 12,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
     alignItems: "center",
-    gap: 4,
-    marginBottom: 4,
   },
-  cardLocationText: {
+  categoryBadge: {
+    position: "absolute" as const,
+    top: 12,
+    left: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+  categoryBadgeText: {
     fontSize: 10,
-    fontWeight: "600" as const,
-    letterSpacing: 0.8,
-    textTransform: "uppercase" as const,
-    color: "rgba(255,255,255,0.85)",
-  },
-  cardTitle: {
-    fontSize: 17,
     fontWeight: "700" as const,
     color: "#FFFFFF",
-    letterSpacing: -0.2,
+    textTransform: "uppercase" as const,
+    letterSpacing: 0.5,
   },
-  cardBottom: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 14,
+  placeInfo: {
+    position: "absolute" as const,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
   },
-  cardDesc: {
+  placeName: {
+    fontSize: 18,
+    fontWeight: "700" as const,
+    color: "#FFFFFF",
+    marginBottom: 4,
+  },
+  placeDescription: {
     fontSize: 13,
     fontWeight: "400" as const,
-    color: "rgba(0,0,0,0.55)",
-    lineHeight: 19,
-    marginBottom: 14,
+    color: "rgba(255,255,255,0.8)",
+    lineHeight: 18,
+    marginBottom: 8,
   },
-  cardFooter: {
+  placeFooter: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  cardBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 12,
-  },
-  cardBadgeText: {
-    fontSize: 11,
-    fontWeight: "700" as const,
-    letterSpacing: 0.5,
-  },
-  cardArrowBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+  placeLocationRow: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    gap: 5,
+  },
+  placeLocationText: {
+    fontSize: 12,
+    fontWeight: "600" as const,
+    color: "rgba(255,255,255,0.7)",
   },
 });

@@ -133,10 +133,10 @@ export default function PlaceDetailScreen() {
   const categoryColor = categoryColors[place.category] || "#117A7A";
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={styles.headerOverlay}>
+      <View style={[styles.headerOverlay, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
@@ -347,7 +347,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 54,
     zIndex: 10,
   },
   backButton: {

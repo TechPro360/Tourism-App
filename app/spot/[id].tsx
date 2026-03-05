@@ -134,7 +134,7 @@ export default function SpotDetailScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
 
       <LinearGradient
@@ -142,7 +142,7 @@ export default function SpotDetailScreen() {
         style={styles.backgroundGradient}
       />
 
-      <View style={styles.headerOverlay}>
+      <View style={[styles.headerOverlay, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <ArrowLeft size={24} color="#FFFFFF" />
         </TouchableOpacity>
@@ -381,7 +381,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 54,
     zIndex: 10,
   },
   backButton: {
