@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,6 @@ import {
   Dimensions,
   Linking,
   Platform,
-  Share,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -30,6 +29,7 @@ import {
 import { municipalities } from "@/constants/municipalities";
 import { useAppContext } from "@/contexts/AppContext";
 import { resolveImageSource } from "@/utils/imageHelper";
+import ShareSheet from "@/components/ShareSheet";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -48,6 +48,7 @@ export default function PlaceDetailScreen() {
   const place = municipality?.places.find((p) => p.id === id);
 
   const favorite = isFavorite(id as string);
+  const [shareVisible, setShareVisible] = useState(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -94,17 +95,13 @@ export default function PlaceDetailScreen() {
     if (url) Linking.openURL(url);
   }, []);
 
-  const handleSharePress = useCallback(async () => {
-    if (!place || !municipality) return;
-    try {
-      await Share.share({
-        title: place.name,
-        message: `Check out ${place.name} in ${municipality.name}, Nueva Ecija! A must-visit destination.${place.website ? `\n\n${place.website}` : ''}`,
-      });
-    } catch (error) {
-      console.log('Share error:', error);
-    }
-  }, [place, municipality]);
+  const handleSharePress = useCallback(() => {
+    setShareVisible(true);
+  }, []);
+
+  const shareMessage = place && municipality
+    ? `Check out ${place.name} in ${municipality.name}, Nueva Ecija! A must-visit destination.`
+    : '';
 
   if (!place || !municipality) {
     return (
@@ -329,6 +326,14 @@ export default function PlaceDetailScreen() {
           )}
         </Animated.View>
       </ScrollView>
+
+      <ShareSheet
+        visible={shareVisible}
+        onClose={() => setShareVisible(false)}
+        title={place.name}
+        message={shareMessage}
+        url={place.website}
+      />
     </View>
   );
 }

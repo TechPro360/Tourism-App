@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,6 @@ import {
   Animated,
   Linking,
   Platform,
-  Share,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -20,10 +19,15 @@ import {
   Share2,
   Tag,
   Users,
+  Heart,
+  Bell,
 } from "lucide-react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { upcomingEvents, eventCategoryColors } from "@/constants/events";
+import { useAppContext } from "@/contexts/AppContext";
+import ShareSheet from "@/components/ShareSheet";
+import NotifySheet from "@/components/NotifySheet";
 
 function formatFullDate(dateStr: string): string {
   const date = new Date(dateStr);
@@ -52,6 +56,13 @@ export default function EventDetailScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(40)).current;
   const heroScale = useRef(new Animated.Value(1.1)).current;
+  const heartScale = useRef(new Animated.Value(1)).current;
+
+  const { toggleFavorite, isFavorite } = useAppContext();
+  const favorite = isFavorite(id as string);
+
+  const [shareVisible, setShareVisible] = useState(false);
+  const [notifyVisible, setNotifyVisible] = useState(false);
 
   const event = upcomingEvents.find((e) => e.id === id);
 
@@ -97,14 +108,20 @@ export default function EventDetailScreen() {
     }
   };
 
-  const handleShare = async () => {
-    try {
-      await Share.share({
-        message: `Check out ${event.title} on ${formatFullDate(event.date)} at ${event.venue}, ${event.location}!`,
-      });
-    } catch (error) {
-      console.log("Share error:", error);
-    }
+  const handleFavoritePress = () => {
+    Animated.sequence([
+      Animated.spring(heartScale, {
+        toValue: 1.3,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+      Animated.spring(heartScale, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    toggleFavorite(id as string);
   };
 
   const handleOpenMap = () => {
@@ -117,6 +134,14 @@ export default function EventDetailScreen() {
       Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${query}`);
     }
   };
+
+  const handleNotifySelect = (option: string) => {
+    if (option) {
+      console.log(`Notification set: ${option} before ${event.title}`);
+    }
+  };
+
+  const shareMessage = `Check out ${event.title} on ${formatFullDate(event.date)} at ${event.venue}, ${event.location}!`;
 
   return (
     <View style={styles.container}>
@@ -135,23 +160,6 @@ export default function EventDetailScreen() {
             locations={[0, 0.3, 1]}
             style={styles.heroGradient}
           />
-
-          <View style={[styles.heroTopBar, { paddingTop: insets.top + 8 }]}>
-            <TouchableOpacity
-              style={styles.heroBackBtn}
-              onPress={() => router.back()}
-              activeOpacity={0.8}
-            >
-              <ArrowLeft size={22} color="#FFF" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.heroShareBtn}
-              onPress={handleShare}
-              activeOpacity={0.8}
-            >
-              <Share2 size={20} color="#FFF" />
-            </TouchableOpacity>
-          </View>
 
           <View style={styles.heroBottom}>
             <View style={[styles.categoryPill, { backgroundColor: colors.bg }]}>
@@ -254,6 +262,59 @@ export default function EventDetailScreen() {
           )}
         </Animated.View>
       </ScrollView>
+
+      <View style={[styles.heroTopBar, { paddingTop: insets.top + 8 }]}>
+        <TouchableOpacity
+          style={styles.heroBackBtn}
+          onPress={() => router.back()}
+          activeOpacity={0.8}
+        >
+          <ArrowLeft size={22} color="#FFF" />
+        </TouchableOpacity>
+        <View style={styles.heroActions}>
+          <TouchableOpacity
+            style={styles.heroActionBtn}
+            onPress={() => setNotifyVisible(true)}
+            activeOpacity={0.8}
+          >
+            <Bell size={20} color="#FFF" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.heroActionBtn}
+            onPress={() => setShareVisible(true)}
+            activeOpacity={0.8}
+          >
+            <Share2 size={20} color="#FFF" />
+          </TouchableOpacity>
+          <Animated.View style={{ transform: [{ scale: heartScale }] }}>
+            <TouchableOpacity
+              style={styles.heroActionBtn}
+              onPress={handleFavoritePress}
+              activeOpacity={0.8}
+            >
+              <Heart
+                size={20}
+                color={favorite ? "#E94444" : "#FFF"}
+                fill={favorite ? "#E94444" : "transparent"}
+              />
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </View>
+
+      <ShareSheet
+        visible={shareVisible}
+        onClose={() => setShareVisible(false)}
+        title={event.title}
+        message={shareMessage}
+      />
+
+      <NotifySheet
+        visible={notifyVisible}
+        onClose={() => setNotifyVisible(false)}
+        eventTitle={event.title}
+        onSelect={handleNotifySelect}
+      />
     </View>
   );
 }
@@ -312,7 +373,9 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 20,
+    zIndex: 10,
   },
   heroBackBtn: {
     width: 42,
@@ -322,7 +385,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  heroShareBtn: {
+  heroActions: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  heroActionBtn: {
     width: 42,
     height: 42,
     borderRadius: 21,

@@ -90,6 +90,19 @@ export const [AppProvider, useAppContext] = createContextHook(() => {
     [favorites]
   );
 
+  const toggleExplored = useCallback(
+    (spotId: string) => {
+      setExploredSpots((prev) => {
+        const newExplored = prev.includes(spotId)
+          ? prev.filter((id) => id !== spotId)
+          : [...prev, spotId];
+        saveState(newExplored, favorites);
+        return newExplored;
+      });
+    },
+    [favorites]
+  );
+
   const isFavorite = useCallback(
     (spotId: string) => favorites.includes(spotId),
     [favorites]
@@ -106,6 +119,7 @@ export const [AppProvider, useAppContext] = createContextHook(() => {
     isLoading,
     toggleFavorite,
     markAsExplored,
+    toggleExplored,
     isFavorite,
     isExplored,
   };

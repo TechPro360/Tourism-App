@@ -10,7 +10,6 @@ import {
   Dimensions,
   Linking,
   Platform,
-  Share,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -33,6 +32,7 @@ import {
 import { touristSpots } from "@/constants/touristSpots";
 import { useAppContext } from "@/contexts/AppContext";
 import { resolveImageSource } from "@/utils/imageHelper";
+import ShareSheet from "@/components/ShareSheet";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -44,7 +44,7 @@ export default function SpotDetailScreen() {
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const scrollX = useRef(new Animated.Value(0)).current;
 
-  const { toggleFavorite, isFavorite, markAsExplored, isExplored } =
+  const { toggleFavorite, isFavorite, toggleExplored, isExplored } =
     useAppContext();
 
   const spot = touristSpots.find((s) => s.id === id);
@@ -52,6 +52,7 @@ export default function SpotDetailScreen() {
   const explored = isExplored(id as string);
 
   const [heartScale] = useState(new Animated.Value(1));
+  const [shareVisible, setShareVisible] = useState(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -86,7 +87,7 @@ export default function SpotDetailScreen() {
   };
 
   const handleExplorePress = () => {
-    markAsExplored(id as string);
+    toggleExplored(id as string);
   };
 
   const handleLocationPress = () => {
@@ -113,17 +114,11 @@ export default function SpotDetailScreen() {
     }
   };
 
-  const handleSharePress = async () => {
-    if (!spot) return;
-    try {
-      await Share.share({
-        title: spot.name,
-        message: `Check out ${spot.name} in ${spot.location}! A must-visit destination in Nueva Ecija.${spot.website ? `\n\n${spot.website}` : ''}`,
-      });
-    } catch (error) {
-      console.log('Share error:', error);
-    }
+  const handleSharePress = () => {
+    setShareVisible(true);
   };
+
+  const shareMessage = spot ? `Check out ${spot.name} in ${spot.location}! A must-visit destination in Nueva Ecija.` : '';
 
   if (!spot) {
     return (
@@ -142,31 +137,33 @@ export default function SpotDetailScreen() {
         style={styles.backgroundGradient}
       />
 
+
+
       <View style={[styles.headerOverlay, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <ArrowLeft size={24} color="#FFFFFF" />
+        <TouchableOpacity style={styles.headerBackButton} onPress={() => router.back()}>
+          <ArrowLeft size={22} color="#FFFFFF" />
         </TouchableOpacity>
 
         <View style={styles.headerActions}>
           <TouchableOpacity
-            style={[styles.actionButton, explored && styles.actionButtonActive]}
+            style={[styles.headerActionBtn, explored && styles.headerActionBtnActive]}
             onPress={handleExplorePress}
           >
             <CheckCircle2
-              size={24}
+              size={20}
               color={explored ? "#117A7A" : "#FFFFFF"}
               fill={explored ? "#117A7A" : "transparent"}
             />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton} onPress={handleSharePress}>
-            <Share2 size={24} color="#FFFFFF" />
+          <TouchableOpacity style={styles.headerActionBtn} onPress={handleSharePress}>
+            <Share2 size={20} color="#FFFFFF" />
           </TouchableOpacity>
 
           <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-            <TouchableOpacity style={styles.actionButton} onPress={handleFavoritePress}>
+            <TouchableOpacity style={styles.headerActionBtn} onPress={handleFavoritePress}>
               <Heart
-                size={24}
+                size={20}
                 color={favorite ? "#E94444" : "#FFFFFF"}
                 fill={favorite ? "#E94444" : "transparent"}
               />
@@ -356,6 +353,14 @@ export default function SpotDetailScreen() {
           )}
         </Animated.View>
       </ScrollView>
+
+      <ShareSheet
+        visible={shareVisible}
+        onClose={() => setShareVisible(false)}
+        title={spot.name}
+        message={shareMessage}
+        url={spot.website}
+      />
     </View>
   );
 }
@@ -383,27 +388,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     zIndex: 10,
   },
-  backButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  headerBackButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "rgba(0,0,0,0.35)",
     justifyContent: "center",
     alignItems: "center",
   },
   headerActions: {
     flexDirection: "row",
-    gap: 12,
+    gap: 10,
   },
-  actionButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  headerActionBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "rgba(0,0,0,0.35)",
     justifyContent: "center",
     alignItems: "center",
   },
-  actionButtonActive: {
+  headerActionBtnActive: {
     backgroundColor: "rgba(255, 255, 255, 0.95)",
   },
   scrollView: {

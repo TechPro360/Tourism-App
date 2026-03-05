@@ -74,10 +74,10 @@ export default function CityPlacesScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <Animated.View style={[styles.heroContainer, { opacity: headerAnim }]}>
+      <Animated.View style={[styles.heroContainer, { opacity: headerAnim, marginTop: insets.top }]}>
         <Image
           source={resolveImageSource(municipality.image)}
           style={styles.heroImage}
@@ -88,7 +88,7 @@ export default function CityPlacesScreen() {
           style={styles.heroGradient}
         />
 
-        <View style={[styles.headerOverlay, { paddingTop: insets.top + 8 }]}>
+        <View style={[styles.headerOverlay, { paddingTop: 8 }]}>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
