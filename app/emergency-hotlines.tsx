@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Linking,
   Platform,
+  TextInput,
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -21,6 +22,8 @@ import {
   Flame,
   Siren,
   Ambulance,
+  Search,
+  X,
 } from "lucide-react-native";
 import { emergencyHotlines } from "@/constants/emergencyHotlines";
 import type { HotlineEntry } from "@/constants/emergencyHotlines";
@@ -31,6 +34,8 @@ export default function EmergencyHotlinesScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
 
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
   const [expandedDistricts, setExpandedDistricts] = React.useState<{
     [key: string]: boolean;
   }>({});
@@ -38,6 +43,34 @@ export default function EmergencyHotlinesScreen() {
   const [expandedEntries, setExpandedEntries] = React.useState<{
     [key: string]: boolean;
   }>({});
+
+  const filteredHotlines = useMemo(() => {
+    if (!searchQuery.trim()) return emergencyHotlines;
+    const query = searchQuery.toLowerCase().trim();
+    return emergencyHotlines
+      .map((district) => ({
+        ...district,
+        entries: district.entries.filter((entry) =>
+          entry.municipality.toLowerCase().includes(query)
+        ),
+      }))
+      .filter((district) => district.entries.length > 0);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const expanded: { [key: string]: boolean } = {};
+      const expandedE: { [key: string]: boolean } = {};
+      filteredHotlines.forEach((district, dIdx) => {
+        expanded[district.name] = true;
+        district.entries.forEach((_, eIdx) => {
+          expandedE[`${dIdx}-${eIdx}`] = true;
+        });
+      });
+      setExpandedDistricts(expanded);
+      setExpandedEntries(expandedE);
+    }
+  }, [searchQuery, filteredHotlines]);
 
   const toggleDistrict = (districtName: string) => {
     setExpandedDistricts((prev) => ({
@@ -230,7 +263,33 @@ export default function EmergencyHotlinesScreen() {
             </Text>
           </View>
 
-          {emergencyHotlines.map((district, districtIdx) => {
+          <View style={styles.searchContainer}>
+            <Search size={18} color="#117A7A" />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search municipality..."
+              placeholderTextColor="#9CBBBB"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              autoCorrect={false}
+              autoCapitalize="none"
+              testID="search-hotlines"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery("")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <X size={18} color="#999" />
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {filteredHotlines.length === 0 && (
+            <View style={styles.emptyState}>
+              <Search size={40} color="#C8DEDE" />
+              <Text style={styles.emptyStateText}>No municipality found for &ldquo;{searchQuery}&rdquo;</Text>
+            </View>
+          )}
+
+          {filteredHotlines.map((district, districtIdx) => {
             const isDistrictExpanded =
               expandedDistricts[district.name] ?? false;
 
@@ -330,6 +389,36 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: 8,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F0F8F8",
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    marginBottom: 20,
+    borderWidth: 1.5,
+    borderColor: "rgba(17, 122, 122, 0.15)",
+    gap: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: "500" as const,
+    color: "#1A1A1A",
+    paddingVertical: 12,
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: 40,
+    gap: 12,
+  },
+  emptyStateText: {
+    fontSize: 15,
+    fontWeight: "500" as const,
+    color: "#7A9E9E",
+    textAlign: "center",
   },
   warningBanner: {
     backgroundColor: "#FFF3E0",

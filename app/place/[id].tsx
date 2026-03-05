@@ -10,6 +10,7 @@ import {
   Dimensions,
   Linking,
   Platform,
+  Share,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -24,6 +25,7 @@ import {
   Twitter,
   Navigation,
   ChevronRight,
+  Share2,
 } from "lucide-react-native";
 import { municipalities } from "@/constants/municipalities";
 import { useAppContext } from "@/contexts/AppContext";
@@ -92,6 +94,18 @@ export default function PlaceDetailScreen() {
     if (url) Linking.openURL(url);
   }, []);
 
+  const handleSharePress = useCallback(async () => {
+    if (!place || !municipality) return;
+    try {
+      await Share.share({
+        title: place.name,
+        message: `Check out ${place.name} in ${municipality.name}, Nueva Ecija! A must-visit destination.${place.website ? `\n\n${place.website}` : ''}`,
+      });
+    } catch (error) {
+      console.log('Share error:', error);
+    }
+  }, [place, municipality]);
+
   if (!place || !municipality) {
     return (
       <View style={styles.container}>
@@ -131,19 +145,29 @@ export default function PlaceDetailScreen() {
           <ArrowLeft size={22} color="#FFFFFF" />
         </TouchableOpacity>
 
-        <Animated.View style={{ transform: [{ scale: heartScale }] }}>
+        <View style={styles.headerActions}>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={handleFavoritePress}
+            onPress={handleSharePress}
             activeOpacity={0.7}
           >
-            <Heart
-              size={22}
-              color={favorite ? "#E94444" : "#FFFFFF"}
-              fill={favorite ? "#E94444" : "transparent"}
-            />
+            <Share2 size={22} color="#FFFFFF" />
           </TouchableOpacity>
-        </Animated.View>
+
+          <Animated.View style={{ transform: [{ scale: heartScale }] }}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handleFavoritePress}
+              activeOpacity={0.7}
+            >
+              <Heart
+                size={22}
+                color={favorite ? "#E94444" : "#FFFFFF"}
+                fill={favorite ? "#E94444" : "transparent"}
+              />
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
       </View>
 
       <ScrollView
@@ -333,6 +357,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
     alignItems: "center",
+  },
+  headerActions: {
+    flexDirection: "row" as const,
+    gap: 10,
   },
   actionButton: {
     width: 44,
