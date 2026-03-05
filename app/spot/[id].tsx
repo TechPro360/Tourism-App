@@ -10,6 +10,7 @@ import {
   Dimensions,
   Linking,
   Platform,
+  Share,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -25,6 +26,9 @@ import {
   Twitter,
   Navigation,
   CheckCircle2,
+  Share2,
+  Mail,
+  Clock,
 } from "lucide-react-native";
 import { touristSpots } from "@/constants/touristSpots";
 import { useAppContext } from "@/contexts/AppContext";
@@ -109,6 +113,18 @@ export default function SpotDetailScreen() {
     }
   };
 
+  const handleSharePress = async () => {
+    if (!spot) return;
+    try {
+      await Share.share({
+        title: spot.name,
+        message: `Check out ${spot.name} in ${spot.location}! A must-visit destination in Nueva Ecija.${spot.website ? `\n\n${spot.website}` : ''}`,
+      });
+    } catch (error) {
+      console.log('Share error:', error);
+    }
+  };
+
   if (!spot) {
     return (
       <View style={styles.container}>
@@ -141,6 +157,10 @@ export default function SpotDetailScreen() {
               color={explored ? "#117A7A" : "#FFFFFF"}
               fill={explored ? "#117A7A" : "transparent"}
             />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionButton} onPress={handleSharePress}>
+            <Share2 size={24} color="#FFFFFF" />
           </TouchableOpacity>
 
           <Animated.View style={{ transform: [{ scale: heartScale }] }}>
@@ -242,6 +262,18 @@ export default function SpotDetailScreen() {
 
           <Text style={styles.description}>{spot.description}</Text>
 
+          {spot.operatingHours && (
+            <View style={styles.infoRow}>
+              <View style={styles.infoIconBox}>
+                <Clock size={18} color="#117A7A" />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={styles.infoLabel}>Operating Hours</Text>
+                <Text style={styles.infoValue}>{spot.operatingHours}</Text>
+              </View>
+            </View>
+          )}
+
           <View style={styles.actionsSection}>
             <TouchableOpacity
               style={styles.primaryButton}
@@ -252,7 +284,7 @@ export default function SpotDetailScreen() {
             </TouchableOpacity>
           </View>
 
-          {(spot.contact || spot.website) && (
+          {(spot.contact || spot.website || spot.email) && (
             <View style={styles.contactSection}>
               <Text style={styles.sectionTitle}>Contact Information</Text>
 
@@ -263,6 +295,16 @@ export default function SpotDetailScreen() {
                 >
                   <Phone size={20} color="#117A7A" />
                   <Text style={styles.contactText}>{spot.contact}</Text>
+                </TouchableOpacity>
+              )}
+
+              {spot.email && (
+                <TouchableOpacity
+                  style={styles.contactButton}
+                  onPress={() => Linking.openURL(`mailto:${spot.email}`)}
+                >
+                  <Mail size={20} color="#117A7A" />
+                  <Text style={styles.contactText}>{spot.email}</Text>
                 </TouchableOpacity>
               )}
 
@@ -502,5 +544,40 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#666666",
     textAlign: "center",
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    backgroundColor: "#F0F8F8",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 14,
+    marginBottom: 20,
+  },
+  infoIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: "#E0F0F0",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  infoContent: {
+    flex: 1,
+  },
+  infoLabel: {
+    fontSize: 12,
+    fontWeight: "600" as const,
+    color: "#117A7A",
+    textTransform: "uppercase" as const,
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  infoValue: {
+    fontSize: 15,
+    fontWeight: "500" as const,
+    color: "#4A4A4A",
+    lineHeight: 20,
   },
 });

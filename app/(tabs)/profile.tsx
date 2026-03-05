@@ -19,6 +19,7 @@ import {
   ExternalLink,
   MapPin,
   Trash2,
+  Phone,
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -195,6 +196,20 @@ export default function SettingsScreen() {
                 <Info size={22} color="#117A7A" />
               </View>
               <Text style={styles.menuItemText}>About Nueva Ecija</Text>
+            </View>
+            <ChevronRight size={20} color="#CCCCCC" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.menuItem, { marginTop: 10 }]}
+            onPress={() => router.push("/emergency-hotlines" as any)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.menuItemLeft}>
+              <View style={[styles.menuIcon, { backgroundColor: "#FFECEC" }]}>
+                <Phone size={22} color="#E74C3C" />
+              </View>
+              <Text style={styles.menuItemText}>Emergency Hotlines</Text>
             </View>
             <ChevronRight size={20} color="#CCCCCC" />
           </TouchableOpacity>

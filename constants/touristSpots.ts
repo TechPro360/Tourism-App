@@ -19,6 +19,8 @@ export interface TouristSpot {
   };
   website?: string;
   contact?: string;
+  email?: string;
+  operatingHours?: string;
 }
 
 export const touristSpots: TouristSpot[] = [
