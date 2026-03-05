@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   Animated,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Heart, MapPin, Trash2 } from "lucide-react-native";
@@ -30,7 +31,7 @@ export default function FavoritesScreen() {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web',
     }).start();
   }, [fadeAnim]);
 
@@ -205,13 +206,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: "hidden",
     backgroundColor: "#F0F0F0",
-    shadowColor: "#117A7A",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    boxShadow: "0px 4px 12px rgba(17, 122, 122, 0.15)",
     elevation: 6,
   },
   cardImage: {
@@ -261,13 +256,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(233, 68, 68, 0.9)",
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
+    boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.25)",
     elevation: 5,
   },
 });

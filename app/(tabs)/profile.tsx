@@ -8,6 +8,7 @@ import {
   Animated,
   Linking,
   Image,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -41,12 +42,12 @@ export default function SettingsScreen() {
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 600,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
       Animated.spring(slideAnim, {
         toValue: 0,
         friction: 8,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
     ]).start();
   }, [fadeAnim, slideAnim]);
@@ -233,7 +234,7 @@ export default function SettingsScreen() {
             <Text style={styles.companyName}>TechPro 360 Solutions</Text>
             <ExternalLink size={16} color="#117A7A" />
           </TouchableOpacity>
-          <Text style={styles.versionText}>Version 1.0.0</Text>
+          <Text style={styles.versionText}>Version 0.1</Text>
         </Animated.View>
       </ScrollView>
     </View>
@@ -287,13 +288,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     alignItems: "center",
-    shadowColor: "#117A7A",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
+    boxShadow: "0px 4px 12px rgba(17, 122, 122, 0.1)",
     elevation: 5,
     borderWidth: 1,
     borderColor: "rgba(17, 122, 122, 0.08)",
@@ -335,13 +330,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 16,
-    shadowColor: "#117A7A",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    boxShadow: "0px 2px 8px rgba(17, 122, 122, 0.08)",
     elevation: 3,
     borderWidth: 1,
     borderColor: "rgba(17, 122, 122, 0.06)",
@@ -424,10 +413,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 10,
     gap: 12,
-    shadowColor: "#117A7A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
+    boxShadow: "0px 2px 8px rgba(17, 122, 122, 0.06)",
     elevation: 3,
     borderWidth: 1,
     borderColor: "rgba(17, 122, 122, 0.06)",

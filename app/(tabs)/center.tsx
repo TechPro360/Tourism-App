@@ -7,15 +7,14 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  Dimensions,
   Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { MapPin, ChevronRight, Compass } from "lucide-react-native";
+import { useRouter } from "expo-router";
 import { resolveImageSource } from "@/utils/imageHelper";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 interface Tab {
   id: string;
@@ -32,6 +31,7 @@ interface ContentItem {
   title: string;
   description: string;
   image: string;
+  spotId: string;
 }
 
 interface TabContent {
@@ -105,16 +105,19 @@ const tabContents: TabContent = {
       title: "Minalungao National Park",
       description: "Crystal-clear emerald waters surrounded by towering limestone cliffs. Experience bamboo rafting, cliff diving, and swimming in one of Nueva Ecija's most breathtaking natural wonders.",
       image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+      spotId: "1",
     },
     {
       title: "Mountain Trekking & Hiking",
       description: "Conquer Mount Damas and explore various hiking trails offering panoramic views of endless rice fields and mountain ranges.",
       image: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800",
+      spotId: "8",
     },
     {
       title: "Eco-Parks & Nature Tours",
       description: "Discover hidden waterfalls, explore lush forests, and encounter diverse wildlife in Nueva Ecija's pristine ecological parks.",
       image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
+      spotId: "3",
     },
   ],
   faith: [
@@ -122,16 +125,19 @@ const tabContents: TabContent = {
       title: "Historic Churches & Cathedrals",
       description: "Visit centuries-old Spanish colonial churches that stand as testaments to the province's deep Catholic faith and enduring spiritual heritage.",
       image: "https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=800",
+      spotId: "4",
     },
     {
       title: "Taong Putik Festival",
       description: "Witness the unique Taong Putik Festival in Aliaga where devotees cover themselves in mud and dried grass to honor St. John the Baptist.",
       image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800",
+      spotId: "10",
     },
     {
       title: "Pilgrimage Sites",
       description: "Experience spiritual renewal at various pilgrimage destinations throughout Nueva Ecija, from sacred shrines to prayer mountains.",
       image: "https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800",
+      spotId: "11",
     },
   ],
   food: [
@@ -139,16 +145,19 @@ const tabContents: TabContent = {
       title: "Authentic Ilocano Cuisine",
       description: "Indulge in the rich flavors of authentic Ilocano dishes including pinakbet, bagnet, and dinengdeng passed down through generations.",
       image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800",
+      spotId: "12",
     },
     {
       title: "Longganisa de Cabanatuan",
       description: "Taste the legendary Cabanatuan longganisa — sweet, garlicky, and bursting with flavor. An iconic delicacy synonymous with Nueva Ecija.",
       image: "https://images.unsplash.com/photo-1613564834361-9436948817d1?w=800",
+      spotId: "5",
     },
     {
       title: "Rice-Based Delicacies",
       description: "As the Rice Granary of the Philippines, Nueva Ecija excels in creating exquisite rice-based treats from savory kakanin to sweet bibingka.",
       image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800",
+      spotId: "24",
     },
   ],
   fun: [
@@ -156,16 +165,19 @@ const tabContents: TabContent = {
       title: "Festivals & Celebrations",
       description: "Join vibrant celebrations of Tanduyong Festival, Binalay Festival, and various town fiestas with colorful street dancing and live music.",
       image: "https://images.unsplash.com/photo-1519167758481-83f29da8c2b6?w=800",
+      spotId: "6",
     },
     {
       title: "Local Markets & Shopping",
       description: "Explore bustling public markets filled with fresh produce, local handicrafts, and unique finds from morning vegetable markets to night bazaars.",
       image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800",
+      spotId: "14",
     },
     {
       title: "Parks & Recreation",
       description: "Enjoy family-friendly activities at various parks and recreation centers. From picnics in scenic spots to outdoor sports and community events.",
       image: "https://images.unsplash.com/photo-1529472119196-cb724127a98e?w=800",
+      spotId: "15",
     },
   ],
   learning: [
@@ -173,22 +185,26 @@ const tabContents: TabContent = {
       title: "Historical Landmarks",
       description: "Discover the rich history through well-preserved landmarks. Visit the Cabanatuan American Memorial and various World War II sites.",
       image: "https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=800",
+      spotId: "13",
     },
     {
       title: "Agricultural Heritage",
       description: "Learn about modern and traditional farming techniques in the Rice Granary of the Philippines through educational farm tours and rice museums.",
       image: "https://images.unsplash.com/photo-1536147210925-c3f1e3e67b0d?w=800",
+      spotId: "7",
     },
     {
       title: "Cultural Museums & Centers",
       description: "Immerse yourself in Nueva Ecija's cultural heritage at various museums, from Ilocano traditions to contemporary art galleries.",
       image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800",
+      spotId: "7",
     },
   ],
 };
 
 export default function CenterScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("adventure");
   const scrollRef = useRef<ScrollView>(null);
 
@@ -218,14 +234,14 @@ export default function CenterScreen() {
           toValue: 1,
           duration: 450,
           delay: index * 120,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
         Animated.spring(anim.translateY, {
           toValue: 0,
           friction: 9,
           tension: 50,
           delay: index * 120,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
       ]).start();
     });
@@ -238,13 +254,13 @@ export default function CenterScreen() {
       Animated.timing(titleOpacity, {
         toValue: 1,
         duration: 350,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
       Animated.spring(titleSlide, {
         toValue: 0,
         friction: 10,
         tension: 60,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
     ]).start();
   }, [titleSlide, titleOpacity]);
@@ -254,12 +270,12 @@ export default function CenterScreen() {
       Animated.timing(logoFade, {
         toValue: 0,
         duration: 150,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
       Animated.timing(logoFade, {
         toValue: 1,
         duration: 300,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
     ]).start();
   }, [logoFade]);
@@ -269,13 +285,13 @@ export default function CenterScreen() {
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 700,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
       Animated.spring(logoScale, {
         toValue: 1,
         friction: 8,
         tension: 40,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
     ]).start();
     animateCards();
@@ -287,12 +303,12 @@ export default function CenterScreen() {
       Animated.timing(contentFade, {
         toValue: 0,
         duration: 120,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
       Animated.timing(contentFade, {
         toValue: 1,
         duration: 280,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
     ]).start();
     animateCards();
@@ -398,6 +414,7 @@ export default function CenterScreen() {
               <TouchableOpacity
                 activeOpacity={0.7}
                 style={[styles.cardArrowBtn, { backgroundColor: activeTabData.accent }]}
+                onPress={() => router.push(`/spot/${item.spotId}` as any)}
               >
                 <ChevronRight size={16} color="#FFF" />
               </TouchableOpacity>
@@ -406,7 +423,7 @@ export default function CenterScreen() {
         </View>
       </Animated.View>
     );
-  }, [activeTab, activeTabData, cardAnimations]);
+  }, [activeTab, activeTabData, cardAnimations, router]);
 
   return (
     <View style={styles.container}>
@@ -594,23 +611,8 @@ const styles = StyleSheet.create({
   cardOuter: {
     borderRadius: 20,
     overflow: "hidden",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.12,
-        shadowRadius: 14,
-      },
-      android: {
-        elevation: 8,
-      },
-      web: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.12,
-        shadowRadius: 14,
-      },
-    }),
+    boxShadow: "0px 6px 14px rgba(0, 0, 0, 0.12)",
+    elevation: 8,
   },
   card: {
     borderRadius: 20,

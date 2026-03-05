@@ -9,6 +9,7 @@ import {
   Image,
   Animated,
   Dimensions,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -88,7 +89,7 @@ function CategoryButton({ category, index, categoryAnimations }: CategoryButtonP
   const handlePressIn = () => {
     Animated.spring(scaleValue, {
       toValue: 0.95,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web',
     }).start();
   };
 
@@ -97,7 +98,7 @@ function CategoryButton({ category, index, categoryAnimations }: CategoryButtonP
       toValue: 1,
       friction: 3,
       tension: 40,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web',
     }).start();
   };
 
@@ -129,10 +130,8 @@ function CategoryButton({ category, index, categoryAnimations }: CategoryButtonP
         >
           <Image
             source={{ uri: category.icon }}
-            style={[
-              styles.categoryIcon,
-              category.specialBg && styles.categoryIconNoTint,
-            ]}
+            style={styles.categoryIcon}
+            tintColor={category.specialBg ? undefined : "#117A7A"}
             resizeMode="contain"
           />
         </View>
@@ -161,12 +160,12 @@ export default function HomeScreen() {
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 800,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 600,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
     ]).start();
 
@@ -178,13 +177,13 @@ export default function HomeScreen() {
           tension: 50,
           friction: 7,
           delay: index * staggerDelay,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
         Animated.timing(anim.opacity, {
           toValue: 1,
           duration: 400,
           delay: index * staggerDelay,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
       ])
     );
@@ -408,9 +407,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 24,
     paddingHorizontal: 32,
-    textShadowColor: "rgba(0, 0, 0, 0.6)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 6,
+    textShadow: "0px 2px 6px rgba(0, 0, 0, 0.6)",
     letterSpacing: 0.3,
   },
   searchContainer: {
@@ -422,13 +419,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     marginBottom: 28,
-    shadowColor: "#117A7A",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    boxShadow: "0px 4px 12px rgba(17, 122, 122, 0.15)",
     elevation: 6,
   },
   searchIcon: {
@@ -454,9 +445,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     marginBottom: 12,
     letterSpacing: 0.5,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
+    textShadow: "0px 1px 4px rgba(0, 0, 0, 0.3)",
   },
   destinationsScroll: {
     marginBottom: 8,
@@ -537,13 +526,7 @@ const styles = StyleSheet.create({
     padding: 12,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#117A7A",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
+    boxShadow: "0px 3px 8px rgba(17, 122, 122, 0.12)",
     elevation: 4,
     borderWidth: 1.5,
     borderColor: "rgba(17, 122, 122, 0.1)",
@@ -563,7 +546,6 @@ const styles = StyleSheet.create({
   categoryIcon: {
     width: 32,
     height: 32,
-    tintColor: "#117A7A",
   },
   categoryText: {
     fontSize: 10,
@@ -576,7 +558,5 @@ const styles = StyleSheet.create({
   categoryIconWhiteBg: {
     backgroundColor: "#FFFFFF",
   },
-  categoryIconNoTint: {
-    tintColor: undefined,
-  },
+
 });

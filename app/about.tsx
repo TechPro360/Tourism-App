@@ -7,12 +7,13 @@ import {
   Image,
   Animated,
   TouchableOpacity,
+  Platform,
+  Linking,
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft, ChevronDown, ChevronUp } from "lucide-react-native";
-import { Linking } from "react-native";
 
 export default function AboutScreen() {
   const router = useRouter();
@@ -40,12 +41,12 @@ export default function AboutScreen() {
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 600,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
       Animated.spring(slideAnim, {
         toValue: 0,
         friction: 8,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }),
     ]).start();
   }, [fadeAnim, slideAnim]);
@@ -128,7 +129,7 @@ export default function AboutScreen() {
           {expandedSections.intro && (
             <View style={styles.collapsibleContent}>
               <Text style={styles.paragraph}>
-                Known as the "Rice Granary of the Philippines" and the "Dairy Capital of Luzon", Nueva Ecija is a rising tourism province in North and Central Luzon.
+                Known as the &quot;Rice Granary of the Philippines&quot; and the &quot;Dairy Capital of Luzon&quot;, Nueva Ecija is a rising tourism province in North and Central Luzon.
               </Text>
               <Text style={[styles.paragraph, { marginTop: 12 }]}>
                 Nueva Ecija is the largest province in Central Luzon and is composed of 5 Cities and 27 Municipalities. The Province is bordered on the east by the Province of Aurora, north east by the Province of Nueva Vizcaya, south by the Province of Bulacan, southeast by the Province of Pampanga, west by the Province of Tarlac and northwest by the Province of Pangasinan.
@@ -163,10 +164,10 @@ export default function AboutScreen() {
                   resizeMode="cover"
                 />
                 <Text style={styles.governorText}>
-                  Hon. Governor Aurelio "Oyie" M. Umali is the youngest ever elected Governor of Nueva Ecija. A lawyer by profession, Governor Oyie began his political career when he ran and won as a Congressman for the 3rd District of Nueva Ecija in 2001. In 2007, at age 41, he became the Governor of Nueva Ecija.
+                  Hon. Governor Aurelio &quot;Oyie&quot; M. Umali is the youngest ever elected Governor of Nueva Ecija. A lawyer by profession, Governor Oyie began his political career when he ran and won as a Congressman for the 3rd District of Nueva Ecija in 2001. In 2007, at age 41, he became the Governor of Nueva Ecija.
                 </Text>
                 <Text style={[styles.governorText, { marginTop: 12 }]}>
-                  Governor Oyie's administration can be described by his slogan Malasakit para sa Novo Ecijano wherein the programs, policies and projects of the Provincial Government are all directed towards uplifting the lives and wellbeing of Novo Ecijanos, especially the marginalized sector.
+                  Governor Oyie&apos;s administration can be described by his slogan Malasakit para sa Novo Ecijano wherein the programs, policies and projects of the Provincial Government are all directed towards uplifting the lives and wellbeing of Novo Ecijanos, especially the marginalized sector.
                 </Text>
                 <Text style={[styles.governorText, { marginTop: 12 }]}>
                   A staunch supporter of the Tourism of Nueva Ecija, this Nueva Ecija Tourism App is one of the primary tourism projects of his administration to promote the tourism sites and establishments in the entire Province.
@@ -258,7 +259,7 @@ export default function AboutScreen() {
           {expandedSections.vision && (
             <View style={styles.collapsibleContent}>
               <Text style={styles.paragraph}>
-                By 2030, Nueva Ecija will be a "word-class" and sustainable eco-adventure, cultural, historical and farm tourism destination in the Philippines.
+                By 2030, Nueva Ecija will be a &quot;word-class&quot; and sustainable eco-adventure, cultural, historical and farm tourism destination in the Philippines.
               </Text>
             </View>
           )}
@@ -297,19 +298,27 @@ export default function AboutScreen() {
           </TouchableOpacity>
           {expandedSections.contact && (
             <View style={styles.collapsibleContent}>
-              <Text style={styles.paragraph}>Email: nuevaecijatourism@gmail.com</Text>
-              <Text style={[styles.paragraph, { marginTop: 8 }]}>
-                For Communications, Reports and Statistics: ptonuevaecija@gmail.com
-              </Text>
-              <Text style={[styles.paragraph, { marginTop: 8 }]}>
-                For events: Nueva Ecija Tourism
+              <Text style={styles.contactLabel}>WEBSITE:</Text>
+              <TouchableOpacity onPress={() => Linking.openURL("https://www.nuevaecija.gov.ph")}>
+                <Text style={styles.contactLink}>www.nuevaecija.gov.ph</Text>
+              </TouchableOpacity>
+              <Text style={[styles.contactLabel, { marginTop: 12 }]}>EMAIL:</Text>
+              <Text style={styles.paragraph}>nuevaecijatourism@gmail.com</Text>
+              <Text style={[styles.contactLabel, { marginTop: 12 }]}>TELEPHONE:</Text>
+              <Text style={styles.paragraph}>(044) 940-5058 local 114</Text>
+              <Text style={[styles.contactLabel, { marginTop: 12 }]}>For Communications, Report and Statistics:</Text>
+              <Text style={styles.paragraph}>ptonuevaecija@gmail.com</Text>
+              <Text style={[styles.contactLabel, { marginTop: 12 }]}>CONTACT NO.:</Text>
+              <Text style={styles.paragraph}>09619466597</Text>
+              <Text style={[styles.paragraph, { marginTop: 16, fontStyle: 'italic' as const }]}>
+                New Capitol Bldg., Singalat, Palayan City, Nueva Ecija.
               </Text>
             </View>
           )}
 
           <View style={styles.versionSection}>
             <Text style={styles.versionText}>NUEVA ECIJA TOURISM @ 2023</Text>
-            <Text style={styles.versionNumber}>Version: 2.1.2</Text>
+            <Text style={styles.versionNumber}>Version 0.1</Text>
           </View>
 
           <View style={styles.footer}>
@@ -351,13 +360,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#117A7A",
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
+    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.25)",
     elevation: 5,
   },
   scrollView: {
@@ -385,13 +388,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
-    shadowColor: "#117A7A",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    boxShadow: "0px 2px 8px rgba(17, 122, 122, 0.08)",
     elevation: 3,
   },
   introParagraph: {
@@ -409,13 +406,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    shadowColor: "#117A7A",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
+    boxShadow: "0px 2px 6px rgba(17, 122, 122, 0.06)",
     elevation: 2,
   },
   collapsibleTitle: {
@@ -468,13 +459,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     padding: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
     elevation: 2,
   },
   staffPhoto: {
@@ -527,5 +512,19 @@ const styles = StyleSheet.create({
     fontWeight: "700" as const,
     color: "#117A7A",
     letterSpacing: 0.3,
+  },
+  contactLabel: {
+    fontSize: 13,
+    fontWeight: "700" as const,
+    color: "#117A7A",
+    letterSpacing: 0.5,
+    textTransform: "uppercase" as const,
+    marginBottom: 4,
+  },
+  contactLink: {
+    fontSize: 15,
+    fontWeight: "600" as const,
+    color: "#117A7A",
+    textDecorationLine: "underline" as const,
   },
 });

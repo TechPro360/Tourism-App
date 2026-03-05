@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   Animated,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Calendar, Clock, MapPin, ChevronRight, Sparkles } from "lucide-react-native";
@@ -81,7 +82,7 @@ export default function EventsScreen() {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web',
     }).start();
   }, [fadeAnim]);
 
@@ -373,10 +374,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: "hidden",
     backgroundColor: "#F0F0F0",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
+    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.12)",
     elevation: 6,
   },
   featuredImage: {
@@ -440,10 +438,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 18,
     padding: 12,
-    shadowColor: "#117A7A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
+    boxShadow: "0px 2px 10px rgba(17, 122, 122, 0.08)",
     elevation: 4,
     borderWidth: 1,
     borderColor: "rgba(17, 122, 122, 0.06)",

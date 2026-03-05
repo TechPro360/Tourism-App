@@ -10,6 +10,7 @@ export default function TabLayout() {
         <Image
           source={{ uri: "https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/hfavmu7s16hdblzuf3bv8" }}
           style={styles.centerIcon}
+          tintColor="#117A7A"
           resizeMode="contain"
         />
       </View>
@@ -81,13 +82,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     borderTopWidth: 0,
     elevation: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: -4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    boxShadow: "0px -4px 8px rgba(0, 0, 0, 0.1)",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     position: "absolute",
@@ -117,13 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#117A7A",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
+    boxShadow: "0px 4px 12px rgba(17, 122, 122, 0.4)",
     elevation: 10,
     borderWidth: 5,
     borderColor: "#FFFFFF",
@@ -131,6 +120,5 @@ const styles = StyleSheet.create({
   centerIcon: {
     width: 50,
     height: 50,
-    tintColor: "#117A7A",
   },
 });

@@ -416,4 +416,84 @@ export const touristSpots: TouristSpot[] = [
       require('@/assets/images/Municipal-Images/Carrangalan/RESTAURANT/Roadtrip Cafe and Resto/Roadtrip Cafe and Resto.jpg'),
     ],
   },
+  {
+    id: "20",
+    name: "Armando's Garden Resort Corp",
+    location: "Cuyapo, Nueva Ecija",
+    description:
+      "A well-known garden resort in Cuyapo featuring beautiful landscaped grounds, swimming pools, and event facilities. A top destination for celebrations and relaxation in northern Nueva Ecija.",
+    image: require('@/assets/images/Municipal-Images/Cuyapo/HOTEL AND RESORT/Armando_s Garden Resort Corp/Armando_s Garden Resort_.jpg'),
+    coordinates: {
+      latitude: 15.7855,
+      longitude: 120.6690,
+    },
+    category: "fun",
+    images: [
+      require('@/assets/images/Municipal-Images/Cuyapo/HOTEL AND RESORT/Armando_s Garden Resort Corp/Armando_s Garden Resort_.jpg'),
+    ],
+  },
+  {
+    id: "21",
+    name: "Dela Pena Farm Adventure & Spring Resort",
+    location: "Cuyapo, Nueva Ecija",
+    description:
+      "An exciting farm adventure and spring resort offering outdoor activities, natural spring pools, and a unique agri-tourism experience in the heart of Cuyapo.",
+    image: require('@/assets/images/Municipal-Images/Cuyapo/HOTEL AND RESORT/Dela Pena Farm Adventure & Spring Resort/Dela Pena Farm Adventure & Spring Resort.jpg'),
+    coordinates: {
+      latitude: 15.7860,
+      longitude: 120.6700,
+    },
+    category: "fun",
+    images: [
+      require('@/assets/images/Municipal-Images/Cuyapo/HOTEL AND RESORT/Dela Pena Farm Adventure & Spring Resort/Dela Pena Farm Adventure & Spring Resort.jpg'),
+    ],
+  },
+  {
+    id: "22",
+    name: "Rancho Hidalgo",
+    location: "Cuyapo, Nueva Ecija",
+    description:
+      "A ranch-style resort offering a rustic countryside experience with horseback riding, swimming, and nature activities surrounded by Cuyapo's scenic landscapes.",
+    image: require('@/assets/images/Municipal-Images/Cuyapo/HOTEL AND RESORT/Rancho Hidalgo/Rancho Hidalgo.jpg'),
+    coordinates: {
+      latitude: 15.7865,
+      longitude: 120.6695,
+    },
+    category: "fun",
+    images: [
+      require('@/assets/images/Municipal-Images/Cuyapo/HOTEL AND RESORT/Rancho Hidalgo/Rancho Hidalgo.jpg'),
+    ],
+  },
+  {
+    id: "23",
+    name: "6th Avenue Food Park",
+    location: "Cuyapo, Nueva Ecija",
+    description:
+      "A vibrant food park bringing together a variety of food stalls and vendors, offering everything from grilled dishes to refreshing drinks in a lively atmosphere.",
+    image: require('@/assets/images/Municipal-Images/Cuyapo/RESTAURANT/6th Avenue Food Park/6th Avenue Food Park.jpg'),
+    coordinates: {
+      latitude: 15.7842,
+      longitude: 120.6672,
+    },
+    category: "food",
+    images: [
+      require('@/assets/images/Municipal-Images/Cuyapo/RESTAURANT/6th Avenue Food Park/6th Avenue Food Park.jpg'),
+    ],
+  },
+  {
+    id: "24",
+    name: "Big MAMA Garden & Cafe",
+    location: "Cuyapo, Nueva Ecija",
+    description:
+      "A charming garden cafe known for its cozy ambiance, freshly brewed coffee, and homestyle Filipino dishes in a beautiful outdoor setting.",
+    image: require('@/assets/images/Municipal-Images/Cuyapo/RESTAURANT/Big MAMA Garden & Cafe/Big MAMA Garden & Cafe.jpg'),
+    coordinates: {
+      latitude: 15.7848,
+      longitude: 120.6678,
+    },
+    category: "food",
+    images: [
+      require('@/assets/images/Municipal-Images/Cuyapo/RESTAURANT/Big MAMA Garden & Cafe/Big MAMA Garden & Cafe.jpg'),
+    ],
+  },
 ];
