@@ -29,7 +29,8 @@ import {
   Mail,
   Clock,
 } from "lucide-react-native";
-import { touristSpots } from "@/constants/touristSpots";
+import { touristSpots, TouristSpot } from "@/constants/touristSpots";
+import { categoryData } from "@/constants/categoryItems";
 import { useAppContext } from "@/contexts/AppContext";
 import { resolveImageSource } from "@/utils/imageHelper";
 import ShareSheet from "@/components/ShareSheet";
@@ -48,7 +49,36 @@ export default function SpotDetailScreen() {
   const { toggleFavorite, isFavorite, toggleExplored, isExplored } =
     useAppContext();
 
-  const spot = touristSpots.find((s) => s.id === id);
+  const spotFromTourist = touristSpots.find((s) => s.id === id);
+
+  const spotFromCategory = !spotFromTourist
+    ? (() => {
+        for (const catKey of Object.keys(categoryData)) {
+          const cat = categoryData[catKey];
+          const item = cat.items.find((i) => i.id === id);
+          if (item) {
+            return {
+              id: item.id,
+              name: item.name,
+              location: item.location,
+              description: item.description,
+              image: item.image,
+              coordinates: { latitude: 15.5, longitude: 121.0 },
+              category: catKey,
+              images: [item.image],
+              operatingHours: undefined,
+              contact: undefined,
+              email: undefined,
+              website: undefined,
+              socialMedia: undefined,
+            } as TouristSpot;
+          }
+        }
+        return null;
+      })()
+    : null;
+
+  const spot = spotFromTourist || spotFromCategory;
   const favorite = isFavorite(id as string);
   const explored = isExplored(id as string);
 

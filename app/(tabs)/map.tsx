@@ -315,6 +315,7 @@ const styles = StyleSheet.create({
     fontWeight: "400" as const,
     color: "#7A9E9E",
     marginTop: 6,
+    marginBottom: 8,
   },
   searchContainer: {
     flexDirection: "row",
